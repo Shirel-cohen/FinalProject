@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Button, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginPage from './LoginPage';
-import GreetingsScreen from "./GreetingsScreen";
+import SelfieScreen from "./SelfieScreen";
+import MusicStyles from "./MusicStyles";
+
 
 const Stack = createStackNavigator();
 
@@ -18,33 +19,48 @@ export default function App() {
                         title: 'MoodPlay',
                         headerTitleAlign: 'center',
                         headerTintColor:"#1f2156",
-                        headerTitleAllowFontScaling:'30px'
 
                     }}
                 />
                 <Stack.Screen
-                    name="Login"
-                    component={LoginPage}
-                    options={{ title: 'Login'}}
+                    name="SelfieScreen"
+                    component={SelfieScreen}
+                    options={{
+                        title: 'Let\'s take a picture 😎' ,
+                        headerTitleAlign: 'left',
+                    }}
                 />
+                <Stack.Screen
+                    name="MusicStyles" // Add the new screen to the stack navigator
+                    component={MusicStyles}
+                    options={{
+                        title: 'MusicStyles',
+                        headerTitleAlign: 'center',
+                    }}
+                />
+
             </Stack.Navigator>
         </NavigationContainer>
     );
 }
 
 function HomeScreen({ navigation }) {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            navigation.navigate('SelfieScreen');
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [navigation]);
+
     return (
         <View style={styles.container}>
             <Image
-                style={{ width: 200, height: 200, borderRadius: 100, position:'relative'}}
+                style={{ width: 350, height: 350, borderRadius: 200, position:'relative'}}
                 source={{
                     uri:
                         'https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg',
                 }}
-            />
-            <Button
-                title="Login"
-                onPress={() => navigation.navigate('Login')}
             />
         </View>
     );

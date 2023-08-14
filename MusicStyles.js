@@ -12,7 +12,7 @@ const MusicStyles = () => {
     const [token, setToken] = useState(null);
     const [searchKey, setSearchKey] = useState(null);
     const [artists, setArtists] = useState([]);
-    const [redirectURI, setRedirectURI] = useState("https://open.spotify.com/search/")
+    // const [redirectURI, setRedirectURI] = useState("https://open.spotify.com/search/")
 
     useEffect(() => {
         const handleDeepLink = async () => {

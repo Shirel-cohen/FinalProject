@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Image, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Image, Linking, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -12,21 +12,33 @@ const MusicStyles = () => {
     const [token, setToken] = useState(null);
     const [searchKey, setSearchKey] = useState(null);
     const [artists, setArtists] = useState([]);
+    const [redirectURI, setRedirectURI] = useState("https://open.spotify.com/search/")
 
     useEffect(() => {
         const handleDeepLink = async () => {
-            const url = await Linking.getInitialURL();
-            const hash = url.split('#')[1];
+            Linking.addEventListener('url', async ({ url }) => {
+                const hash = url.split('#')[1];
+                if (hash) {
+                    const tokenParam = hash.split('&').find(elem => elem.startsWith('access_token')).split('=')[1];
+                    setToken(tokenParam);
+                    await AsyncStorage.setItem('token', tokenParam);
+                }
+            });
 
-            if (hash) {
-                const tokenParam = hash.split('&').find(elem => elem.startsWith('access_token')).split('=')[1];
-                setToken(tokenParam);
+            const initialUrl = await Linking.getInitialURL();
+            if (initialUrl) {
+                const hash = initialUrl.split('#')[1];
+                if (hash) {
+                    const tokenParam = hash.split('&').find(elem => elem.startsWith('access_token')).split('=')[1];
+                    setToken(tokenParam);
+                    await AsyncStorage.setItem('token', tokenParam);
+                }
             }
         };
 
         const loadTokenFromStorage = async () => {
             try {
-                const storedToken = await AsyncStorage.getItem('token'); // Load token from AsyncStorage
+                const storedToken = await AsyncStorage.getItem('token');
                 if (storedToken) {
                     setToken(storedToken);
                 }
@@ -39,9 +51,9 @@ const MusicStyles = () => {
         loadTokenFromStorage();
     }, []);
 
-    const logout = () => {
+    const logout = async () => {
         setToken(null);
-        // Remove token from AsyncStorage or other storage mechanism here
+        await AsyncStorage.removeItem('token'); // Remove token from AsyncStorage
     };
 
     const searchArtists = async () => {
@@ -74,14 +86,28 @@ const MusicStyles = () => {
             </View>
         ));
     };
+    const CustomButton = ({ text, redirectURI }) => {
+        const handlePress = () => {
+            Linking.openURL(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${redirectURI}&response_type=${RESPONSE_TYPE}`);
+        };
+        return (
+            <TouchableOpacity onPress={handlePress}>
+                <Text style={styles.text}>{text}</Text>
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Spotify React Native</Text>
+            {/*<Text>Spotify React Native</Text>*/}
             {!token ? (
-                <TouchableOpacity onPress={() => Linking.openURL(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`)}>
-                    <Text>Login to Spotify</Text>
-                </TouchableOpacity>
+                <>
+                    <CustomButton text="Rock" redirectURI="https://open.spotify.com/genre/0JQ5DAqbMKFDXXwE9BDJAr" />
+                    <CustomButton text="Pop" redirectURI="https://open.spotify.com/genre/0JQ5DAqbMKFEC4WFtoNRpw" />
+                    <CustomButton text="Latine" redirectURI="https://open.spotify.com/genre/0JQ5DAqbMKFxXaXKP7zcDp" />
+                    <CustomButton text="Concentration" redirectURI="https://open.spotify.com/genre/0JQ5DAqbMKFCbimwdOYlsl" />
+
+                </>
             ) : (
                 <TouchableOpacity onPress={logout}>
                     <Text>Logout</Text>
@@ -105,6 +131,37 @@ const MusicStyles = () => {
         </View>
     );
 };
-
+const styles = StyleSheet.create({
+    cloud: {
+        borderRadius: 50,
+        padding: 20,
+        margin: 20,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 8,
+    },
+    text: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+        backgroundColor: '#cbd4e8',
+        borderRadius: 50,
+        padding: 20,
+        margin: 20,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 8,
+    },
+});
 export default MusicStyles;
-

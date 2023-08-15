@@ -10,9 +10,7 @@ const RESPONSE_TYPE = 'token';
 
 const MusicStyles = () => {
     const [token, setToken] = useState(null);
-    const [searchKey, setSearchKey] = useState(null);
-    const [artists, setArtists] = useState([]);
-    // const [redirectURI, setRedirectURI] = useState("https://open.spotify.com/search/")
+    const [mood, setMood] = useState('happy');
 
     useEffect(() => {
         const handleDeepLink = async () => {
@@ -51,41 +49,16 @@ const MusicStyles = () => {
         loadTokenFromStorage();
     }, []);
 
+    const updateMood = (newMood) => {
+        setMood(newMood);
+    };
+
     const logout = async () => {
         setToken(null);
         await AsyncStorage.removeItem('token'); // Remove token from AsyncStorage
     };
 
-    const searchArtists = async () => {
-        try {
-            const response = await axios.get('https://api.spotify.com/v1/search', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                params: {
-                    q: searchKey,
-                    type: 'artist',
-                },
-            });
 
-            setArtists(response.data.artists.items);
-        } catch (error) {
-            console.error('Error searching artists:', error);
-        }
-    };
-
-    const renderArtists = () => {
-        return artists.map(artist => (
-            <View key={artist.id}>
-                {artist.images.length ? (
-                    <Image style={{ width: '100%', height: 100 }} source={{ uri: artist.images[0].url }} />
-                ) : (
-                    <Text>No Image</Text>
-                )}
-                <Text>{artist.name}</Text>
-            </View>
-        ));
-    };
     const CustomButton = ({ text, redirectURI }) => {
         const handlePress = () => {
             Linking.openURL(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${redirectURI}&response_type=${RESPONSE_TYPE}`);
@@ -99,13 +72,67 @@ const MusicStyles = () => {
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            {/*<Text>Spotify React Native</Text>*/}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 5 }}>
+                <TouchableOpacity onPress={() => updateMood('happy')}>
+                    <Text style={mood === 'happy' ? styles.selectedMoodButton : styles.moodButton}>Happy</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => updateMood('sad')}>
+                    <Text style={mood === 'sad' ? styles.selectedMoodButton : styles.moodButton}>Sad</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => updateMood('angry')}>
+                    <Text style={mood === 'angry' ? styles.selectedMoodButton : styles.moodButton}>Angry</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => updateMood('depressed')}>
+                    <Text style={mood === 'depressed' ? styles.selectedMoodButton : styles.moodButton}>Depressed</Text>
+                </TouchableOpacity>
+            </View>
+
             {!token ? (
                 <>
-                    <CustomButton text="Rock" redirectURI="https://open.spotify.com/genre/0JQ5DAqbMKFDXXwE9BDJAr" />
-                    <CustomButton text="Pop" redirectURI="https://open.spotify.com/genre/0JQ5DAqbMKFEC4WFtoNRpw" />
-                    <CustomButton text="Latine" redirectURI="https://open.spotify.com/genre/0JQ5DAqbMKFxXaXKP7zcDp" />
-                    <CustomButton text="Concentration" redirectURI="https://open.spotify.com/genre/0JQ5DAqbMKFCbimwdOYlsl" />
+                    {mood === 'sad' && (
+                        <>
+                            <CustomButton text="Hip Hop" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIhAZHpzlopNk" />
+                            <CustomButton text="Pop" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIdZrPvCvCkh4" />
+                            <CustomButton text="Electric" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIhndsHFX3usj" />
+                            <CustomButton text="Classic" redirectURI="https://open.spotify.com/playlist/37i9dQZF1DXbm0dp7JzNeL" />
+                            <CustomButton text="Soul" redirectURI="https://open.spotify.com/playlist/37i9dQZF1DXchlyaSeZp0q" />
+                            <CustomButton text="Rock" redirectURI="https://open.spotify.com/playlist/6CikVcWPz2RoBE8yXOI9sY" />
+                            <CustomButton text="Mix" redirectURI="https://open.spotify.com/playlist/6nxPNnmSE0d5WlplUsa5L3" />
+
+                        </>
+                    )}
+                    {mood === 'happy' && (
+                        <>
+                            <CustomButton text="Hip Hop" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIcFkD7LAX8lS" />
+                            <CustomButton text="Pop" redirectURI="https://open.spotify.com/playlist/37i9dQZF1DWVlYsZJXqdym" />
+                            <CustomButton text="Electric" redirectURI="https://open.spotify.com/playlist/3T4hRBYj2QzQfm6zwdrRj9" />
+                            <CustomButton text="Classic" redirectURI="https://open.spotify.com/playlist/2mu4kG7W1LVjDh8SsxZBLF" />
+                            <CustomButton text="Soul" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIeDpL80Eu0QH" />
+                            <CustomButton text="Rock" redirectURI="https://open.spotify.com/playlist/2BumzROvyilNPyczjghkba" />
+                            <CustomButton text="Mix" redirectURI="https://open.spotify.com/playlist/0RH319xCjeU8VyTSqCF6M4" />
+                        </>
+                    )}
+                    {mood === 'angry' && (
+                        <>
+                            <CustomButton text="Hip Hop" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIdaUXZDw9dYo" />
+                            <CustomButton text="Pop" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIfThrCEERy1q" />
+                            <CustomButton text="Electric" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIdL7qgTGbNlT" />
+                            <CustomButton text="Classic" redirectURI="https://open.spotify.com/playlist/4b2maBQiHFVILb2o72kGuJ" />
+                            <CustomButton text="Soul" redirectURI="https://open.spotify.com/playlist/5zxrv8Y9lx26L5KHTDbgTi" />
+                            <CustomButton text="Rock" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIhPEivbiO6xe" />
+                            <CustomButton text="Mix" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIgNZCaOGb0Mi" />
+                        </>
+                    )}
+                    {mood === 'depressed' && (
+                        <>
+                            <CustomButton text="Hip Hop" redirectURI="https://open.spotify.com/playlist/4ZaiEOSzu2lkncC0aMlJiv" />
+                            <CustomButton text="Pop" redirectURI="https://open.spotify.com/playlist/3ZlKFlbR0uFA5hkUFBUUZZ" />
+                            <CustomButton text="Classic" redirectURI="https://open.spotify.com/playlist/2f1FNuNMdoVNdCMmXogwUQ" />
+                            <CustomButton text="Soul" redirectURI="https://open.spotify.com/track/139WYHG6Dn48GdLzyhj29P" />
+                            <CustomButton text="Rock" redirectURI="https://open.spotify.com/playlist/0DtQQvbkuQEutzrtmqgVX9" />
+                            <CustomButton text="Mix" redirectURI="https://open.spotify.com/playlist/37i9dQZF1EIg6gLNLe52Bd" />
+                        </>
+                    )}
 
                 </>
             ) : (
@@ -114,54 +141,54 @@ const MusicStyles = () => {
                 </TouchableOpacity>
             )}
 
-            {token && (
-                <View>
-                    <TextInput
-                        placeholder="Search for artists"
-                        value={searchKey}
-                        onChangeText={text => setSearchKey(text)}
-                    />
-                    <TouchableOpacity onPress={searchArtists}>
-                        <Text>Search</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
 
-            {renderArtists()}
         </View>
     );
 };
+
 const styles = StyleSheet.create({
     cloud: {
-        borderRadius: 50,
-        padding: 20,
-        margin: 20,
+        borderRadius: 10,
+        padding: 10,
+        margin: 10,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
-            height: 4,
+            height: 2,
         },
         shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 8,
+        shadowRadius: 2.65,
+        elevation: 4,
     },
     text: {
-        fontSize: 20,
+        fontSize: 5,
         fontWeight: 'bold',
         color: '#333',
         textAlign: 'center',
         backgroundColor: '#cbd4e8',
-        borderRadius: 50,
-        padding: 20,
-        margin: 20,
+        borderRadius: 30,
+        padding: 10,
+        margin: 10,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
             height: 4,
         },
         shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 8,
+        shadowRadius: 2.65,
+        elevation: 4,
+    },
+    moodButton: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        color: '#333',
+        padding: 5,
+    },
+    selectedMoodButton: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: 'blue',
+        padding: 5,
     },
 });
 export default MusicStyles;

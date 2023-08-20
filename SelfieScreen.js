@@ -1,4 +1,3 @@
-
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
 import {Button,StyleSheet,Text,View,SafeAreaView,Image} from "react-native";
@@ -8,7 +7,6 @@ import * as MediaLibrary from "expo-media-library";
 import { Ionicons, MaterialCommunityIcons  } from "@expo/vector-icons"; // Import the Ionicons icon library
 import { useNavigation } from "@react-navigation/native";
 
-import MusicStyles from "./MusicStyles";
 
 export default function SelfieScreen() {
     const navigation = useNavigation();
@@ -64,12 +62,6 @@ export default function SelfieScreen() {
             });
         };
 
-        // let savePic = () => {
-        //     MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
-        //         setPhoto(undefined);
-        //     });
-        //
-        // };
         let savePic = async () => {
             MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
                 setPhoto(undefined);
@@ -84,11 +76,11 @@ export default function SelfieScreen() {
                     source={{ uri: "data:image/jpg;base64," + photo.base64 }}
                 />
 
-                    <Button title={"Share"} onPress={sharePic} color={"#5372af"}  />
-                    {hasMediaLibraryPermission ? (
-                        <Button title={"Save"} onPress={savePic} color={"#91a0b9"} />
-                    ) : undefined}
-                    <Button title={"Discard"} onPress={() => setPhoto(undefined)} color={"#afc0e3"} />
+                <Button title={"Share"} onPress={sharePic} color={"#5372af"}  />
+                {hasMediaLibraryPermission ? (
+                    <Button title={"Save"} onPress={savePic} color={"#91a0b9"} />
+                ) : undefined}
+                <Button title={"Discard"} onPress={() => setPhoto(undefined)} color={"#afc0e3"} />
 
             </SafeAreaView>
         );
@@ -96,7 +88,7 @@ export default function SelfieScreen() {
 
 
     return (
-            <Camera style={styles.container} ref={cameraRef} type={cameraType}>
+        <Camera style={styles.container} ref={cameraRef} type={cameraType}>
             <View style={styles.buttonContainer} >
                 <View style={styles.iconButton}>
 

@@ -10,6 +10,7 @@ const Stack = createStackNavigator();
 
 export default function App() {
     return (
+
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen
@@ -31,6 +32,7 @@ export default function App() {
                     }}
                 />
                 <Stack.Screen
+
                     name="MusicStyles" // Add the new screen to the stack navigator
                     component={MusicStyles}
                     options={{

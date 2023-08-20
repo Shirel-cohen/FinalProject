@@ -40,6 +40,7 @@
       "favicon": "./assets/favicon.png",
 
       "permissions": ["CAMERA"]
-    }
+    },
+    "scheme": "exp://10.100.102.42:19000"
   }
 }

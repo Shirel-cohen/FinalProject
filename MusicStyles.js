@@ -51,6 +51,8 @@ const MOOD_PLAYLISTS = {
 const MusicStyles = () => {
     const [token, setToken] = useState(null);
     const [tracks, setTracks] = useState([]);
+    const [searchedMood, setSearchedMood] = useState(''); // New state for mood search
+    const [displayedMoodStyles, setDisplayedMoodStyles] = useState(null); // New state for displayed mood styles
 
 
     useEffect(() => {
@@ -116,24 +118,14 @@ const MusicStyles = () => {
         }
     };
 
-    const renderTracks = () => {
-        return tracks.map(track => (
-            <View key={track.track.id}>
-                <Text>{track.track.name}</Text>
-                {/* Add a button to play the track */}
-                <TouchableOpacity onPress={() => playTrack(track.track.uri)}>
-                    <Text style={{color:'#be3d3d'}}>Play</Text>
-                </TouchableOpacity>
-            </View>
-        ));
-    };
+
     const playTrack = async (trackUri) => {
         try {
             await axios.put(
                 'https://api.spotify.com/v1/me/player/play',
                 {
                     uris: [trackUri],
-                    device_id: "SM-G7814"
+                    // device_id: "SM-G7814"
                 },
                 {
                     headers: {
@@ -150,7 +142,7 @@ const MusicStyles = () => {
     return (
         <View style={styles.container}>
 
-            <Text>Spotify React Native</Text>
+            <Text>hello!</Text>
             {!token ? (
                 <TouchableOpacity
                     style={styles.loginButton}
@@ -167,49 +159,57 @@ const MusicStyles = () => {
 
             {token && (
                 <View style={styles.contentContainer}>
-                    <View sstyle={styles.moodContainer}>
-                        {Object.keys(MOOD_PLAYLISTS).map(mood => (
-                            <View key={mood}>
-                                <Text style={styles.moodTitle}>{mood}</Text>
-                                <View style={styles.styleContainer}>
-                                    {Object.keys(MOOD_PLAYLISTS[mood]).map(style => (
-                                        <TouchableOpacity
-                                            key={style}
-                                            onPress={() => fetchTracksByMoodAndStyle(mood, style)}>
-                                            <Text style={styles.moodButton}>{style}</Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </View>
-                            </View>
-                        ))}
-
-
+                    <View style={styles.moodSearchContainer}>
+                        <TextInput
+                            style={styles.moodSearchInput}
+                            placeholder="Enter mood..."
+                            value={searchedMood}
+                            onChangeText={text => setSearchedMood(text)}
+                        />
+                        <TouchableOpacity
+                            style={styles.searchButton}
+                            onPress={() => {
+                                if (searchedMood) {
+                                    const filteredMoodStyles = MOOD_PLAYLISTS[searchedMood.toLowerCase()];
+                                    setDisplayedMoodStyles(filteredMoodStyles);
+                                }
+                            }
+                        }>
+                            <Text style={styles.searchButtonText}>Search</Text>
+                        </TouchableOpacity>
                     </View>
 
-                    {/*{renderTracks()}*/}
+                    <View style={styles.moodContainer}>
+                        {displayedMoodStyles && Object.keys(displayedMoodStyles).map(style => (
+                            <TouchableOpacity
+                                key={style}
+                                onPress={() => fetchTracksByMoodAndStyle(searchedMood.toLowerCase(), style)}>
+                                <Text style={styles.moodButton}>{style}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+
                     <FlatList
                         style={styles.trackContainer}
                         data={tracks}
                         keyExtractor={item => item.track.id}
-                        renderItem={({ item }) => (
+                        renderItem={({item}) => (
                             <View style={styles.trackItem}>
-                                <Text style={styles.trackText}>{item.track.name}</Text>
+
                                 <TouchableOpacity
                                     style={styles.playButton}
                                     onPress={() => playTrack(item.track.uri)}>
                                     <Text style={styles.playButtonText}>Play</Text>
                                 </TouchableOpacity>
+                                <Text style={styles.trackText}>{item.track.name}</Text>
                             </View>
                         )}
                     />
                 </View>
-
             )}
-
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     contentContainer: {
         flex: 1,
         width: '100%',
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
     },
     loginButton: {
         backgroundColor: '#1DB954',
@@ -253,10 +253,13 @@ const styles = StyleSheet.create({
     },
     moodButton: {
         backgroundColor: '#cbd4e8',
-        borderRadius: 30,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+        width: '50%',
+        borderRadius:10,
+        paddingVertical: 5,
         margin: 5,
+        alignItems:"center",
+        textAlign:"center",
+        alignSelf:"center",
     },
     selectedMoodButton: {
         backgroundColor: '#1DB954',
@@ -274,20 +277,21 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 10,
         paddingVertical: 5,
-        paddingHorizontal: 10,
+        //paddingHorizontal: 10,
+        textAlign:"auto",
         backgroundColor: 'white',
-        borderRadius: 5,
+        borderRadius: 3,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 1,
         },
         shadowOpacity: 0.3,
-        shadowRadius: 2.65,
-        elevation: 3,
+        shadowRadius: 1.65,
+        elevation: 2,
     },
     trackText: {
-        fontSize: 16,
+        fontSize: 14,
     },
     playButton: {
         backgroundColor: '#1DB954',
@@ -305,154 +309,3 @@ const styles = StyleSheet.create({
 
 export default MusicStyles;
 
-//     return (
-//         <View style={styles.container}>
-//             <Text style={styles.heading}>Spotify React Native</Text>
-//             {!token ? (
-//                 <TouchableOpacity
-//                     style={styles.loginButton}
-//                     onPress={() => Linking.openURL(authUrl)}>
-//                     <Text style={styles.buttonText}>Login to Spotify</Text>
-//                 </TouchableOpacity>
-//             ) : (
-//                 <TouchableOpacity
-//                     style={styles.loginButton}
-//                     onPress={logout}>
-//                     <Text style={styles.buttonText}>Logout</Text>
-//                 </TouchableOpacity>
-//             )}
-//
-//             {token && (
-//                 <View style={styles.contentContainer}>
-//                     <View style={styles.moodContainer}>
-//                         {Object.keys(MOOD_PLAYLISTS).map(mood => (
-//                             <View key={mood}>
-//                                 <Text style={styles.moodTitle}>{mood}</Text>
-//                                 <View style={styles.styleContainer}>
-//                                     {Object.keys(MOOD_PLAYLISTS[mood]).map(style => (
-//                                         <TouchableOpacity
-//                                             key={style}
-//                                             onPress={() => fetchTracksByMoodAndStyle(mood, style)}>
-//                                             <Text style={styles.moodButton}>{style}</Text>
-//                                         </TouchableOpacity>
-//                                     ))}
-//                                 </View>
-//                             </View>
-//                         ))}
-//                     </View>
-//
-//                     <FlatList
-//                         style={styles.trackContainer}
-//                         data={tracks}
-//                         keyExtractor={item => item.track.id}
-//                         renderItem={({ item }) => (
-//                             <View style={styles.trackItem}>
-//                                 <Text style={styles.trackText}>{item.track.name}</Text>
-//                                 <TouchableOpacity
-//                                     style={styles.playButton}
-//                                     onPress={() => playTrack(item.track.uri)}>
-//                                     <Text style={styles.playButtonText}>Play</Text>
-//                                 </TouchableOpacity>
-//                             </View>
-//                         )}
-//                     />
-//                     {renderTracks()}
-//                 </View>
-//             )}
-//         </View>
-//     );
-// };
-//
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         backgroundColor: '#f5f5f5',
-//     },
-//     heading: {
-//         fontSize: 24,
-//         fontWeight: 'bold',
-//         marginBottom: 20,
-//     },
-//     contentContainer: {
-//         flex: 1,
-//         width: '100%',
-//         paddingHorizontal: 20,
-//     },
-//     loginButton: {
-//         backgroundColor: '#1DB954',
-//         paddingVertical: 10,
-//         paddingHorizontal: 20,
-//         borderRadius: 5,
-//         marginVertical: 10,
-//     },
-//     buttonText: {
-//         color: 'white',
-//         fontSize: 16,
-//         fontWeight: 'bold',
-//     },
-//     moodContainer: {
-//         marginBottom: 20,
-//     },
-//     moodTitle: {
-//         fontSize: 18,
-//         fontWeight: 'bold',
-//         marginBottom: 10,
-//     },
-//     styleContainer: {
-//         flexDirection: 'row',
-//         flexWrap: 'wrap',
-//     },
-//     moodButton: {
-//         backgroundColor: '#cbd4e8',
-//         borderRadius: 30,
-//         paddingHorizontal: 20,
-//         paddingVertical: 10,
-//         margin: 5,
-//     },
-//     selectedMoodButton: {
-//         backgroundColor: '#1DB954',
-//         borderRadius: 30,
-//         paddingHorizontal: 20,
-//         paddingVertical: 10,
-//         margin: 5,
-//     },
-//     trackContainer: {
-//         marginTop: 20,
-//     },
-//     trackItem: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         justifyContent: 'space-between',
-//         marginBottom: 10,
-//         paddingVertical: 5,
-//         paddingHorizontal: 10,
-//         backgroundColor: 'white',
-//         borderRadius: 5,
-//         shadowColor: '#000',
-//         shadowOffset: {
-//             width: 0,
-//             height: 2,
-//         },
-//         shadowOpacity: 0.3,
-//         shadowRadius: 2.65,
-//         elevation: 3,
-//     },
-//     trackText: {
-//         fontSize: 16,
-//     },
-//     playButton: {
-//         backgroundColor: '#1DB954',
-//         borderRadius: 5,
-//         paddingHorizontal: 10,
-//         paddingVertical: 5,
-//     },
-//     playButtonText: {
-//         color: 'white',
-//         fontSize: 14,
-//         fontWeight: 'bold',
-//     },
-// });
-//
-// export default MusicStyles;

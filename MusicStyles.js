@@ -47,6 +47,15 @@ const MOOD_PLAYLISTS = {
         rock: '0DtQQvbkuQEutzrtmqgVX9',
         mix: '37i9dQZF1EIg6gLNLe52Bd',
     },
+    surprise:{
+        pop: '3k1OryDac16hCAWbljib04',
+        hipHop: '37i9dQZF1DX0D996ZXujBy',
+        electronic:'4ZskYxIkEE0PhYCLHsxcF6',
+        classic: '6AFqboR1lmeWveddd6hea6',
+        soul:'6AFqboR1lmeWveddd6hea6',
+        rock: '',
+        mix: '0hlSvRQEWrtgQudVkgCFFt',
+    }
 };
 const MusicStyles = () => {
     const [token, setToken] = useState(null);
@@ -174,7 +183,7 @@ const MusicStyles = () => {
                                     setDisplayedMoodStyles(filteredMoodStyles);
                                 }
                             }
-                        }>
+                            }>
                             <Text style={styles.searchButtonText}>Search</Text>
                         </TouchableOpacity>
                     </View>
@@ -308,4 +317,3 @@ const styles = StyleSheet.create({
 
 
 export default MusicStyles;
-

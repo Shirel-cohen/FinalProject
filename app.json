@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "MoodPlay",
+    "name": "appMusic",
     "slug": "appMusic",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon1.png",
+    "icon": "./assets/icon.png",
     "permissions": ["CAMERA"],
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splashScreen.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -41,6 +41,6 @@
 
       "permissions": ["CAMERA"]
     },
-    "scheme": "exp://192.168.68.103:19000"
+    "scheme": "exp://10.100.102.42:19000",
   }
 }

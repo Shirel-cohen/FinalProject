@@ -4,10 +4,10 @@ import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CLIENT_ID = '74e458b48ee2421289c45b9a57aa3b25';
-const REDIRECT_URI = 'exp://10.100.102.42:19000';
+const REDIRECT_URI = 'exp://192.168.68.103:19000';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
-const AUTH_SCOPE = 'user-modify-playback-state'; // Add more scopes if needed
+const AUTH_SCOPE = 'user-modify-playback-state playlist-read-collaborative'; // Add more scopes if needed
 const authUrl = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${encodeURIComponent(AUTH_SCOPE)}`;
 
 const MOOD_PLAYLISTS = {
@@ -133,7 +133,7 @@ const MusicStyles = () => {
                 'https://api.spotify.com/v1/me/player/play',
                 {
                     uris: [trackUri],
-                    device_id: "SM-G7814"
+                   // device_id: "SM-G7814"
                 },
                 {
                     headers: {

@@ -4,6 +4,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import SelfieScreen from "./SelfieScreen";
 import MusicStyles from "./MusicStyles";
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
+setTimeout(SplashScreen.hideAsync, 3000);
 
 
 const Stack = createStackNavigator();

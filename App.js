@@ -21,7 +21,7 @@ export default function App() {
                     name="Home"
                     component={HomeScreen}
                     options={{
-                        title: 'MoodPlay',
+                        title: 'Have fun',
                         headerTitleAlign: 'center',
                         headerTintColor:"#1f2156",
 
@@ -37,7 +37,7 @@ export default function App() {
                 />
                 <Stack.Screen
 
-                    name="MusicStyles" // Add the new screen to the stack navigator
+                    name="MusicStyles"
                     component={MusicStyles}
                     options={{
                         title: 'MusicStyles',
@@ -62,10 +62,10 @@ function HomeScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <Image
-                style={{ width: 350, height: 350, borderRadius: 200, position:'relative'}}
+                // style={{ width: 350, height: 350, borderRadius: 200, position:'relative'}}
                 source={{
                     uri:
-                        'https://t3.ftcdn.net/jpg/04/54/66/12/360_F_454661277_NtQYM8oJq2wOzY1X9Y81FlFa06DVipVD.jpg',
+                        'https://www.budrutz.co.il/wp-content/uploads/2021/01/Classic-937-Black.jpg',
                 }}
             />
         </View>
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         textAlign:'center',
-        backgroundColor:'#afc0e3',
+        backgroundColor:'#000000',
     },
     logo: {
         width: 200,

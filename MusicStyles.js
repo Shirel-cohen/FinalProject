@@ -7,8 +7,10 @@ const CLIENT_ID = '74e458b48ee2421289c45b9a57aa3b25';
 const REDIRECT_URI = 'exp://10.100.102.42:19000';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
+
 const AUTH_SCOPE = 'user-modify-playback-state'; // Add more scopes if needed
 const authUrl = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${encodeURIComponent(AUTH_SCOPE)}`;
+
 
 const MOOD_PLAYLISTS = {
     happy: {
@@ -41,7 +43,6 @@ const MOOD_PLAYLISTS = {
     depressed: {
         pop: '3ZlKFlbR0uFA5hkUFBUUZZ',
         hipHop: '4ZaiEOSzu2lkncC0aMlJiv',
-        electronic:'',
         classic: '2f1FNuNMdoVNdCMmXogwUQ',
         soul:'139WYHG6Dn48GdLzyhj29P',
         rock: '0DtQQvbkuQEutzrtmqgVX9',
@@ -53,15 +54,15 @@ const MOOD_PLAYLISTS = {
         electronic:'4ZskYxIkEE0PhYCLHsxcF6',
         classic: '6AFqboR1lmeWveddd6hea6',
         soul:'6AFqboR1lmeWveddd6hea6',
-        rock: '',
         mix: '0hlSvRQEWrtgQudVkgCFFt',
     }
 };
-const MusicStyles = () => {
+const MusicStyles = ({route}) => {
+    const mood = route.params?.mood;
     const [token, setToken] = useState(null);
     const [tracks, setTracks] = useState([]);
-    const [searchedMood, setSearchedMood] = useState(''); // New state for mood search
-    const [displayedMoodStyles, setDisplayedMoodStyles] = useState(null); // New state for displayed mood styles
+    const [displayedMoodStyles, setDisplayedMoodStyles] = useState(null);
+
 
 
     useEffect(() => {
@@ -99,6 +100,9 @@ const MusicStyles = () => {
 
         handleDeepLink();
         loadTokenFromStorage();
+        const filteredMoodStyles = MOOD_PLAYLISTS[mood.toLowerCase()];
+        setDisplayedMoodStyles(filteredMoodStyles);
+
     }, []);
 
     const logout = async () => {
@@ -134,7 +138,6 @@ const MusicStyles = () => {
                 'https://api.spotify.com/v1/me/player/play',
                 {
                     uris: [trackUri],
-                    // device_id: "SM-G7814"
                 },
                 {
                     headers: {
@@ -152,6 +155,7 @@ const MusicStyles = () => {
         <View style={styles.container}>
 
             <Text>hello!</Text>
+            <Text>{mood}</Text>
             {!token ? (
                 <TouchableOpacity
                     style={styles.loginButton}
@@ -168,31 +172,11 @@ const MusicStyles = () => {
 
             {token && (
                 <View style={styles.contentContainer}>
-                    <View style={styles.moodSearchContainer}>
-                        <TextInput
-                            style={styles.moodSearchInput}
-                            placeholder="Enter mood..."
-                            value={searchedMood}
-                            onChangeText={text => setSearchedMood(text)}
-                        />
-                        <TouchableOpacity
-                            style={styles.searchButton}
-                            onPress={() => {
-                                if (searchedMood) {
-                                    const filteredMoodStyles = MOOD_PLAYLISTS[searchedMood.toLowerCase()];
-                                    setDisplayedMoodStyles(filteredMoodStyles);
-                                }
-                            }
-                            }>
-                            <Text style={styles.searchButtonText}>Search</Text>
-                        </TouchableOpacity>
-                    </View>
-
                     <View style={styles.moodContainer}>
                         {displayedMoodStyles && Object.keys(displayedMoodStyles).map(style => (
                             <TouchableOpacity
                                 key={style}
-                                onPress={() => fetchTracksByMoodAndStyle(searchedMood.toLowerCase(), style)}>
+                                onPress={() => fetchTracksByMoodAndStyle(mood.toLowerCase(), style)}>
                                 <Text style={styles.moodButton}>{style}</Text>
                             </TouchableOpacity>
                         ))}
@@ -204,7 +188,6 @@ const MusicStyles = () => {
                         keyExtractor={item => item.track.id}
                         renderItem={({item}) => (
                             <View style={styles.trackItem}>
-
                                 <TouchableOpacity
                                     style={styles.playButton}
                                     onPress={() => playTrack(item.track.uri)}>

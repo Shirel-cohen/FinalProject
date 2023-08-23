@@ -6,6 +6,7 @@ import { shareAsync } from "expo-sharing";
 import * as MediaLibrary from "expo-media-library";
 import { Ionicons, MaterialCommunityIcons  } from "@expo/vector-icons"; // Import the Ionicons icon library
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios"; // Import axios
 
 
 export default function SelfieScreen() {
@@ -44,6 +45,26 @@ export default function SelfieScreen() {
         };
 
         let newPhoto = await cameraRef.current.takePictureAsync(options);
+        const apiUrl = "https://2c18-93-173-75-30.ngrok.io";
+        const formData = new FormData();
+        formData.append("image", {
+            uri: newPhoto.uri,
+            name: "image.jpg",
+            type: "image/jpeg",
+        });
+
+        try {
+            const response = await axios.post(apiUrl, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            // The response will contain the mood analysis result
+            console.log(response.data); // Do whatever you want with the response
+        } catch (error) {
+            console.error("Error sending image:", error);
+        }
         setPhoto(newPhoto);
     };
 

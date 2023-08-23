@@ -4,11 +4,11 @@
     "slug": "appMusic",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon1.png",
     "permissions": ["CAMERA"],
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splashScreen.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

@@ -18,15 +18,7 @@ export default function SelfieScreen() {
     const [photo, setPhoto] = useState();
     const [cameraType, setCameraType] = useState(Camera.Constants.Type.front);
     const [dominantEmotion, setDominantEmotion] = useState('');
-    const MOOD_PLAYLISTS = [
-        { emotion: 'happy'},
-        { emotion: 'sad'},
-        { emotion: 'angry'},
-        { emotion: 'depressed'},
-        { emotion: 'surprise'},
 
-    ];
-    const [responseAnalyze, setResponseAnalyze] = useState('');
 
     useEffect(() => {
         (async () => {
@@ -55,7 +47,7 @@ export default function SelfieScreen() {
         };
 
         let newPhoto = await cameraRef.current.takePictureAsync(options);
-        const apiUrl = "https://f784-93-173-75-30.ngrok.io";
+        const apiUrl = " https://f572-93-173-75-30.ngrok.io ";
         const formData = new FormData();
         formData.append("image", {
             uri: newPhoto.uri,
@@ -70,10 +62,9 @@ export default function SelfieScreen() {
                 },
             }
             );
-            setDominantEmotion(response.data[0].dominant_emotion);
+               setDominantEmotion(response.data.mod);
 
-            console.log(response.data)
-            setResponseAnalyze(response)
+            console.log(response.data.mod)
 
 
         } catch (error) {
@@ -98,52 +89,14 @@ export default function SelfieScreen() {
             });
         };
 
-        // let savePic = async () => {
-        //     MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
-        //         setPhoto(undefined);
-        //         console.log(dominantEmotion)
-        //         if (dominantEmotion) {
-        //             navigation.navigate("MusicStyles", { mood: dominantEmotion });
-        //         }
-        //     });
-        // };
+
 
         let savePic = async () => {
             MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
                 setPhoto(undefined);
                 console.log(dominantEmotion);
+                     navigation.navigate("MusicStyles", { mood: dominantEmotion });
 
-                // Check if the dominant emotion is in the MOOD_PLAYLISTS array
-                const matchingPlaylist = MOOD_PLAYLISTS.find(item => item.emotion === dominantEmotion);
-
-                if (matchingPlaylist) {
-                    navigation.navigate("MusicStyles", { mood: dominantEmotion });
-                } else {
-                    // If not, check the second most dominant emotion
-                    const secondDominantEmotion = Object.keys(responseAnalyze.data[0].emotion).reduce((a, b) =>
-                        responseAnalyze.data[0].emotion[a] > responseAnalyze.data[0].emotion[b] ? a : b
-                    );
-
-                    const secondMatchingPlaylist = MOOD_PLAYLISTS.find(item => item.emotion === secondDominantEmotion);
-
-                    if (secondMatchingPlaylist) {
-                        navigation.navigate("MusicStyles", { mood: secondDominantEmotion });
-                    } else {
-                        // If not, check the third most dominant emotion
-                        const emotionsSortedByValue = Object.keys(responseAnalyze.data[0].emotion).sort((a, b) =>
-                            responseAnalyze.data[0].emotion[b] - responseAnalyze.data[0].emotion[a]
-                        );
-                        const thirdDominantEmotion = emotionsSortedByValue[2];
-
-                        const thirdMatchingPlaylist = MOOD_PLAYLISTS.find(item => item.emotion === thirdDominantEmotion);
-
-                        if (thirdMatchingPlaylist) {
-                            navigation.navigate("MusicStyles", { mood: thirdDominantEmotion });
-                        } else {
-                            console.log("No matching playlist found for dominant, second dominant, and third dominant emotions");
-                        }
-                    }
-                }
             });
         };
 

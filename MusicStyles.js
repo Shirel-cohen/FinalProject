@@ -40,14 +40,14 @@ const MOOD_PLAYLISTS = {
         rock: '37i9dQZF1EIhPEivbiO6xe',
         mix:'37i9dQZF1EIgNZCaOGb0Mi',
     },
-    depressed: {
-        pop: '3ZlKFlbR0uFA5hkUFBUUZZ',
-        hipHop: '4ZaiEOSzu2lkncC0aMlJiv',
-        classic: '2f1FNuNMdoVNdCMmXogwUQ',
-        soul:'139WYHG6Dn48GdLzyhj29P',
-        rock: '0DtQQvbkuQEutzrtmqgVX9',
-        mix: '37i9dQZF1EIg6gLNLe52Bd',
-    },
+    // depressed: {
+    //     pop: '3ZlKFlbR0uFA5hkUFBUUZZ',
+    //     hipHop: '4ZaiEOSzu2lkncC0aMlJiv',
+    //     classic: '2f1FNuNMdoVNdCMmXogwUQ',
+    //     soul:'139WYHG6Dn48GdLzyhj29P',
+    //     rock: '0DtQQvbkuQEutzrtmqgVX9',
+    //     mix: '37i9dQZF1EIg6gLNLe52Bd',
+    // },
     surprise:{
         pop: '3k1OryDac16hCAWbljib04',
         hipHop: '37i9dQZF1DX0D996ZXujBy',
@@ -62,7 +62,8 @@ const MusicStyles = ({route}) => {
     const [token, setToken] = useState(null);
     const [tracks, setTracks] = useState([]);
     const [displayedMoodStyles, setDisplayedMoodStyles] = useState(null);
-
+    const [selectedMood, setSelectedMood] = useState(null);
+    const [selectedStyle, setSelectedStyle] = useState(null);
 
 
     useEffect(() => {
@@ -100,10 +101,18 @@ const MusicStyles = ({route}) => {
 
         handleDeepLink();
         loadTokenFromStorage();
-        const filteredMoodStyles = MOOD_PLAYLISTS[mood.toLowerCase()];
-        setDisplayedMoodStyles(filteredMoodStyles);
+        const isValidMood = Object.keys(MOOD_PLAYLISTS).includes(mood.toLowerCase());
+        if (isValidMood) {
+            setSelectedMood(mood.toLowerCase());
+            const filteredMoodStyles = MOOD_PLAYLISTS[mood.toLowerCase()];
+            setDisplayedMoodStyles(filteredMoodStyles);
+        } else {
+            setSelectedMood(null); // Clear selected mood
+            setSelectedStyle(null); // Clear selected style
+            setDisplayedMoodStyles(MOOD_PLAYLISTS); // Show all mood buttons
+        }
 
-    }, []);
+    }, [mood]);
 
     const logout = async () => {
         setToken(null);
@@ -111,14 +120,14 @@ const MusicStyles = ({route}) => {
     };
 
 
-    const fetchTracksByMoodAndStyle = async (mood, style) => {
+    const fetchTracksByMoodAndStyle = async (selectedMood, selectedStyle) => {
         try {
-            if (!MOOD_PLAYLISTS[mood] || !MOOD_PLAYLISTS[mood][style]) {
-                console.error('Invalid mood or style:', mood, style);
+            if (!MOOD_PLAYLISTS[selectedMood] || !MOOD_PLAYLISTS[selectedMood][selectedStyle]) {
+                console.error('Invalid mood or style:', selectedMood, selectedStyle);
                 return;
             }
 
-            const playlistId = MOOD_PLAYLISTS[mood][style];
+            const playlistId = MOOD_PLAYLISTS[selectedMood][selectedStyle];
             const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -150,12 +159,8 @@ const MusicStyles = ({route}) => {
         }
     };
 
-
     return (
         <View style={styles.container}>
-
-            <Text>hello!</Text>
-            <Text>{mood}</Text>
             {!token ? (
                 <TouchableOpacity
                     style={styles.loginButton}
@@ -173,30 +178,43 @@ const MusicStyles = ({route}) => {
             {token && (
                 <View style={styles.contentContainer}>
                     <View style={styles.moodContainer}>
-                        {displayedMoodStyles && Object.keys(displayedMoodStyles).map(style => (
+                        <Text>hello!</Text>
+                        <Text> We have identified that your mood is:{mood}</Text>
+                        <Text> Choose a song style and enjoy!</Text>
+                        {Object.keys(displayedMoodStyles).map(moodButton => (
                             <TouchableOpacity
-                                key={style}
-                                onPress={() => fetchTracksByMoodAndStyle(mood.toLowerCase(), style)}>
-                                <Text style={styles.moodButton}>{style}</Text>
+                                key={moodButton}
+                                onPress={() => {
+                                    if (!selectedMood) {
+                                        setSelectedMood(moodButton.toLowerCase());
+                                        setDisplayedMoodStyles(MOOD_PLAYLISTS[moodButton.toLowerCase()]);
+                                    } else {
+                                        setSelectedStyle(moodButton.toLowerCase());
+                                        fetchTracksByMoodAndStyle(selectedMood, moodButton.toLowerCase());
+                                    }
+                                }}>
+                                <Text style={styles.moodButton}>{moodButton}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
 
-                    <FlatList
-                        style={styles.trackContainer}
-                        data={tracks}
-                        keyExtractor={item => item.track.id}
-                        renderItem={({item}) => (
-                            <View style={styles.trackItem}>
-                                <TouchableOpacity
-                                    style={styles.playButton}
-                                    onPress={() => playTrack(item.track.uri)}>
-                                    <Text style={styles.playButtonText}>Play</Text>
-                                </TouchableOpacity>
-                                <Text style={styles.trackText}>{item.track.name}</Text>
-                            </View>
-                        )}
-                    />
+                    {selectedMood && selectedStyle && (
+                        <FlatList
+                            style={styles.trackContainer}
+                            data={tracks}
+                            keyExtractor={item => item.track.id}
+                            renderItem={({ item }) => (
+                                <View style={styles.trackItem}>
+                                    <TouchableOpacity
+                                        style={styles.playButton}
+                                        onPress={() => playTrack(item.track.uri)}>
+                                        <Text style={styles.playButtonText}>Play</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.trackText}>{item.track.name}</Text>
+                                </View>
+                            )}
+                        />
+                    )}
                 </View>
             )}
         </View>

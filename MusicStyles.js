@@ -4,7 +4,7 @@ import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CLIENT_ID = '74e458b48ee2421289c45b9a57aa3b25';
-const REDIRECT_URI = 'exp://10.100.102.42:19000';
+const REDIRECT_URI = 'exp://192.168.68.103:19000';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#284B63',
     },
     heading: {
         fontSize: 24,

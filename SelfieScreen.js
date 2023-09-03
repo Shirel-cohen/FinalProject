@@ -47,7 +47,7 @@ export default function SelfieScreen() {
         };
 
         let newPhoto = await cameraRef.current.takePictureAsync(options);
-        const apiUrl = " https://f572-93-173-75-30.ngrok.io ";
+        const apiUrl = "  https://1471-79-178-73-52.ngrok.io ";
         const formData = new FormData();
         formData.append("image", {
             uri: newPhoto.uri,

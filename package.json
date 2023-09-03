@@ -22,13 +22,14 @@
     "expo-media-library": "~15.2.3",
     "expo-permissions": "~14.1.1",
     "expo-sharing": "~11.2.2",
-    "expo-splash-screen": "^0.20.5",
+    "expo-splash-screen": "~0.18.2",
     "expo-status-bar": "~1.4.4",
     "expo-updates": "~0.16.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.71.8",
     "react-native-app-auth": "^6.4.3",
+    "react-native-app-intro-slider": "^4.0.4",
     "react-native-camera": "^4.2.1",
     "react-native-image": "^0.1.1",
     "react-native-image-crop-picker": "^0.40.0",
@@ -36,8 +37,7 @@
     "react-native-track-player": "^3.2.0",
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "~0.18.10",
-    "request": "^2.88.2",
-    "expo-splash-screen": "~0.18.2"
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

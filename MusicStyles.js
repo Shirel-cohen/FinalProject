@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import {View, Text, TouchableOpacity, TextInput, Image, Linking, StyleSheet, FlatList} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MusicListScreen from './MusicListScreen'; // Import the new component
 
 const CLIENT_ID = '74e458b48ee2421289c45b9a57aa3b25';
 const REDIRECT_URI = 'exp://192.168.68.103:19000';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 
-const AUTH_SCOPE = 'user-modify-playback-state'; // Add more scopes if needed
+const AUTH_SCOPE = 'user-modify-playback-state user-library-read '; // Add more scopes if needed
 const authUrl = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${encodeURIComponent(AUTH_SCOPE)}`;
 
 
@@ -40,14 +41,6 @@ const MOOD_PLAYLISTS = {
         rock: '37i9dQZF1EIhPEivbiO6xe',
         mix:'37i9dQZF1EIgNZCaOGb0Mi',
     },
-    // depressed: {
-    //     pop: '3ZlKFlbR0uFA5hkUFBUUZZ',
-    //     hipHop: '4ZaiEOSzu2lkncC0aMlJiv',
-    //     classic: '2f1FNuNMdoVNdCMmXogwUQ',
-    //     soul:'139WYHG6Dn48GdLzyhj29P',
-    //     rock: '0DtQQvbkuQEutzrtmqgVX9',
-    //     mix: '37i9dQZF1EIg6gLNLe52Bd',
-    // },
     surprise:{
         pop: '3k1OryDac16hCAWbljib04',
         hipHop: '37i9dQZF1DX0D996ZXujBy',
@@ -57,7 +50,7 @@ const MOOD_PLAYLISTS = {
         mix: '0hlSvRQEWrtgQudVkgCFFt',
     }
 };
-const MusicStyles = ({route}) => {
+const MusicStyles = ({route,  navigation}) => {
     const mood = route.params?.mood;
     const [token, setToken] = useState(null);
     const [tracks, setTracks] = useState([]);
@@ -107,21 +100,25 @@ const MusicStyles = ({route}) => {
             const filteredMoodStyles = MOOD_PLAYLISTS[mood.toLowerCase()];
             setDisplayedMoodStyles(filteredMoodStyles);
         } else {
-            setSelectedMood(null); // Clear selected mood
-            setSelectedStyle(null); // Clear selected style
-            setDisplayedMoodStyles(MOOD_PLAYLISTS); // Show all mood buttons
+            setSelectedMood(null);
+            setSelectedStyle(null);
+            setDisplayedMoodStyles(MOOD_PLAYLISTS);
         }
 
     }, [mood]);
 
     const logout = async () => {
         setToken(null);
-        await AsyncStorage.removeItem('token'); // Remove token from AsyncStorage
+        await AsyncStorage.removeItem('token');
     };
 
-
-    const fetchTracksByMoodAndStyle = async (selectedMood, selectedStyle) => {
+    const navigateToMusicListScreen = async (selectedStyle) => {
         try {
+            if (!selectedMood) {
+                console.error('Please select a mood first.');
+                return;
+            }
+
             if (!MOOD_PLAYLISTS[selectedMood] || !MOOD_PLAYLISTS[selectedMood][selectedStyle]) {
                 console.error('Invalid mood or style:', selectedMood, selectedStyle);
                 return;
@@ -134,13 +131,16 @@ const MusicStyles = ({route}) => {
                 },
             });
 
-            setTracks(response.data.items);
+            navigation.navigate('MusicList', {
+                mood: selectedMood,
+                selectedStyle,
+                tracks: response.data.items,
+                playTrack,
+            });
         } catch (error) {
             console.error('Error fetching tracks by mood and style:', error);
         }
     };
-
-
     const playTrack = async (trackUri) => {
         try {
             await axios.put(
@@ -184,15 +184,8 @@ const MusicStyles = ({route}) => {
                         {Object.keys(displayedMoodStyles).map(moodButton => (
                             <TouchableOpacity
                                 key={moodButton}
-                                onPress={() => {
-                                    if (!selectedMood) {
-                                        setSelectedMood(moodButton.toLowerCase());
-                                        setDisplayedMoodStyles(MOOD_PLAYLISTS[moodButton.toLowerCase()]);
-                                    } else {
-                                        setSelectedStyle(moodButton.toLowerCase());
-                                        fetchTracksByMoodAndStyle(selectedMood, moodButton.toLowerCase());
-                                    }
-                                }}>
+                                onPress={() => navigateToMusicListScreen(moodButton.toLowerCase())}
+                            >
                                 <Text style={styles.moodButton}>{moodButton}</Text>
                             </TouchableOpacity>
                         ))}
@@ -287,7 +280,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 10,
         paddingVertical: 5,
-        //paddingHorizontal: 10,
         textAlign:"auto",
         backgroundColor: 'white',
         borderRadius: 3,

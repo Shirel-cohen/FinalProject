@@ -6,6 +6,7 @@ import SelfieScreen from "./SelfieScreen";
 import MusicStyles from "./MusicStyles";
 import * as SplashScreen from 'expo-splash-screen';
 import AppIntroSlider from 'react-native-app-intro-slider';
+import MusicListScreen from './MusicListScreen'; // Import the new component
 
 
 SplashScreen.preventAutoHideAsync();
@@ -14,7 +15,7 @@ setTimeout(SplashScreen.hideAsync, 3000);
 const Stack = createStackNavigator();
 
 export default function App() {
-    
+
     const [show_Main_App, setShow_Main_App] = useState(false);
 
     const on_Done_all_slides = () => {
@@ -61,40 +62,24 @@ export default function App() {
                             headerTitleAlign:"center"
                         }}
                     />
+                    <Stack.Screen
+                        name="MusicList"
+                        component={MusicListScreen}
+                    />
 
                 </Stack.Navigator>
             </NavigationContainer>
         );
     } else {
-            return (
-                <AppIntroSlider slides={slides} onDone={on_Done_all_slides}
-                                showSkipButton={true}
-                                onSkip={on_Skip_slides} data={slides} renderItem={RenderItem}/>
-            );
-        }
+        return (
+            <AppIntroSlider slides={slides} onDone={on_Done_all_slides}
+                            showSkipButton={true}
+                            onSkip={on_Skip_slides} data={slides} renderItem={RenderItem}/>
+        );
     }
-
-function HomeScreen({ navigation }) {
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            navigation.navigate('SelfieScreen');
-        }, 3000);
-
-        return () => clearTimeout(timer);
-    }, [navigation]);
-
-    return (
-        <View style={styles.container}>
-            <Image
-                // style={{ width: 350, height: 350, borderRadius: 200, position:'relative'}}
-                source={{
-                    uri:
-                        'https://www.budrutz.co.il/wp-content/uploads/2021/01/Classic-937-Black.jpg',
-                }}
-            />
-        </View>
-    );
 }
+
+
 
 const styles = StyleSheet.create({
     container: {

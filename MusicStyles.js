@@ -3,9 +3,10 @@ import {View, Text, TouchableOpacity, TextInput, Image, Linking, StyleSheet, Fla
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MusicListScreen from './MusicListScreen'; // Import the new component
+import * as Font from 'expo-font';
 
 const CLIENT_ID = '74e458b48ee2421289c45b9a57aa3b25';
-const REDIRECT_URI = 'exp://192.168.68.103:19000';
+const REDIRECT_URI = 'exp://10.100.102.42:8081';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 
@@ -115,7 +116,8 @@ const MusicStyles = ({route,  navigation}) => {
     const navigateToMusicListScreen = async (selectedStyle) => {
         try {
             if (!selectedMood) {
-                console.error('Please select a mood first.');
+                setSelectedMood(selectedStyle.toLowerCase());
+                setDisplayedMoodStyles(MOOD_PLAYLISTS[selectedStyle.toLowerCase()]);
                 return;
             }
 

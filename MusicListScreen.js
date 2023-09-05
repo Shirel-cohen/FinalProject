@@ -1,8 +1,39 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, TouchableOpacity, FlatList, StyleSheet, Image, TextInput} from 'react-native';
+import { Audio } from 'expo-av'; // Import Expo Audio
 
 const MusicListScreen = ({ route, navigation }) => {
     const { mood, selectedStyle, tracks, playTrack } = route.params;
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [audioObject, setAudioObject] = useState(null);
+
+    useEffect(() => {
+        // Initialize audioObject when the component mounts
+        const initializeAudioObject = async () => {
+            const newAudioObject = new Audio.Sound();
+            await newAudioObject.loadAsync({ shouldPlay: false });
+            setAudioObject(newAudioObject);
+        };
+
+        initializeAudioObject();
+    }, []);
+    const filteredTracks = tracks.filter(item =>
+        item.track.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const togglePlayPause = async () => {
+        if (isPlaying) {
+            // Pause the currently playing track
+            await audioObject.pauseAsync();
+        } else {
+            // Continue playing the paused track
+            await audioObject.playAsync();
+        }
+        setIsPlaying(!isPlaying); // Toggle the play/pause state
+    };
+
+
 
     return (
         <View>
@@ -11,9 +42,17 @@ const MusicListScreen = ({ route, navigation }) => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Text style={styles.backToList}>Go Back to Music Styles</Text>
             </TouchableOpacity>
+            <View style={styles.searchContainer}>
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search for a song"
+                    value={searchQuery}
+                    onChangeText={text => setSearchQuery(text)}
+                />
+            </View>
             <FlatList
                 style={styles.trackContainer}
-                data={tracks}
+                data={filteredTracks}
                 keyExtractor={(item) => item.track.id}
                 renderItem={({ item }) => (
                     <View style={styles.trackItem}>
@@ -22,21 +61,26 @@ const MusicListScreen = ({ route, navigation }) => {
                             style={{ width: 100, height: 100 }}
                         />
                         <View style={styles.songInfo}>
-                        <Text style={styles.trackText}>{item.track.name}</Text>
-                        <TouchableOpacity
-                            style={styles.playButton}
-                            onPress={() => playTrack(item.track.uri)}>
-                            <Text style={styles.playButtonText}>Play</Text>
-                        </TouchableOpacity>
+                            <Text style={styles.trackText}>{item.track.name}</Text>
+                            <TouchableOpacity
+                                style={styles.playButton}
+                                onPress={() => playTrack(item.track.uri)}>
+                                <Text style={styles.playButtonText}>Play</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.playButton}
+                                onPress={togglePlayPause}>
+                                <Text style={styles.playButtonText}>
+                                    {isPlaying ? 'Continue' : 'Pause'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    </View>
-
                 )}
             />
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     trackContainer: {
         marginTop: 20,

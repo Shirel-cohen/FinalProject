@@ -17,7 +17,7 @@ const authUrl = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT
 const MOOD_PLAYLISTS = {
     happy: {
         pop: '37i9dQZF1DWVlYsZJXqdym',
-        hipHop: '37i9dQZF1EIcFkD7LAX8lS',
+        hiphop: '37i9dQZF1EIcFkD7LAX8lS',
         electronic: '3T4hRBYj2QzQfm6zwdrRj9',
         classic: '2mu4kG7W1LVjDh8SsxZBLF',
         soul:'37i9dQZF1EIeDpL80Eu0QH',
@@ -26,7 +26,7 @@ const MOOD_PLAYLISTS = {
     },
     sad: {
         pop: '37i9dQZF1EIdZrPvCvCkh4',
-        hipHop: '37i9dQZF1EIhAZHpzlopNk',
+        hiphop: '37i9dQZF1EIhAZHpzlopNk',
         electronic: '37i9dQZF1EIhndsHFX3usj',
         classic: '37i9dQZF1DXbm0dp7JzNeL',
         soul:'37i9dQZF1DXchlyaSeZp0q',
@@ -35,7 +35,7 @@ const MOOD_PLAYLISTS = {
     },
     angry: {
         pop: '37i9dQZF1EIfThrCEERy1q',
-        hipHop: '37i9dQZF1EIdaUXZDw9dYo',
+        hiphop: '37i9dQZF1EIdaUXZDw9dYo',
         electronic: '37i9dQZF1EIdL7qgTGbNlT',
         classic: '4b2maBQiHFVILb2o72kGuJ',
         soul:'5zxrv8Y9lx26L5KHTDbgTi',
@@ -44,7 +44,7 @@ const MOOD_PLAYLISTS = {
     },
     surprise:{
         pop: '3k1OryDac16hCAWbljib04',
-        hipHop: '37i9dQZF1DX0D996ZXujBy',
+        hiphop: '37i9dQZF1DX0D996ZXujBy',
         electronic:'4ZskYxIkEE0PhYCLHsxcF6',
         classic: '6AFqboR1lmeWveddd6hea6',
         soul:'6AFqboR1lmeWveddd6hea6',
@@ -138,6 +138,7 @@ const MusicStyles = ({route,  navigation}) => {
                 selectedStyle,
                 tracks: response.data.items,
                 playTrack,
+                token
             });
         } catch (error) {
             console.error('Error fetching tracks by mood and style:', error);

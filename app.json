@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon1.png",
-    "permissions": ["CAMERA"],
+    "permissions": ["CAMERA", "AUDIO_RECORDING"],
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splashScreen.png",
@@ -34,7 +34,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["CAMERA"]
+      "permissions": ["CAMERA_ROLL", "AUDIO_RECORDING", "WRITE_EXTERNAL_STORAGE", "READ_EXTERNAL_STORAGE",  "INTERNET", "MEDIA_LIBRARY"]
     },
     "web": {
       "favicon": "./assets/favicon.png",

@@ -1,39 +1,85 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, FlatList, StyleSheet, Image, TextInput} from 'react-native';
-import { Audio } from 'expo-av'; // Import Expo Audio
 
-const MusicListScreen = ({ route, navigation }) => {
-    const { mood, selectedStyle, tracks, playTrack } = route.params;
-    const [searchQuery, setSearchQuery] = useState('');
+
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, TextInput } from 'react-native';
+import { Audio } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios'; // Import the axios library
+
+const PlayButton = ({ trackUri, token }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [audioObject, setAudioObject] = useState(null);
 
-    useEffect(() => {
-        // Initialize audioObject when the component mounts
-        const initializeAudioObject = async () => {
-            const newAudioObject = new Audio.Sound();
-            await newAudioObject.loadAsync({ shouldPlay: false });
-            setAudioObject(newAudioObject);
-        };
+    const initializeAudioObject = async () => {
+        try {
+            if (!trackUri) {
+                throw new Error('Invalid or missing trackUri');
+            }
 
-        initializeAudioObject();
-    }, []);
-    const filteredTracks = tracks.filter(item =>
-        item.track.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+            if (audioObject) {
+                // Toggle play/pause
+                if (isPlaying) {
+                    await audioObject.pauseAsync();
+                } else {
+                    await audioObject.playAsync();
+                }
+                setIsPlaying(!isPlaying);
+            } else {
+                // Create a new audio object and start playing
+                const trackId = trackUri.split(':').pop();
+                const spotifyResponse = await axios.get(`https://api.spotify.com/v1/tracks/${trackId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
-    const togglePlayPause = async () => {
-        if (isPlaying) {
-            // Pause the currently playing track
-            await audioObject.pauseAsync();
-        } else {
-            // Continue playing the paused track
-            await audioObject.playAsync();
+                const audioUrl = spotifyResponse.data.preview_url;
+
+                if (!audioUrl) {
+                    throw new Error('Track does not have a preview URL');
+                }
+
+                const newAudioObject = new Audio.Sound();
+                await newAudioObject.loadAsync({ uri: audioUrl });
+                await newAudioObject.playAsync();
+                setIsPlaying(true);
+                setAudioObject(newAudioObject);
+            }
+        } catch (error) {
+            console.error('Error initializing audioObject:', error);
         }
-        setIsPlaying(!isPlaying); // Toggle the play/pause state
     };
 
+    useEffect(() => {
+        // Clean up audioObject when the component unmounts
+        return () => {
+            if (audioObject) {
+                audioObject.unloadAsync();
+            }
+        };
+    }, []);
 
+    return (
+        <TouchableOpacity
+            style={styles.playButton}
+            onPress={initializeAudioObject}
+        >
+            <Ionicons
+                name={isPlaying ? 'ios-pause' : 'ios-play'}
+                size={32}
+                color="white"
+            />
+        </TouchableOpacity>
+    );
+};
+
+const MusicListScreen = ({ route, navigation }) => {
+    const { mood, selectedStyle, tracks, token } = route.params;
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredTracks = tracks.filter((item) =>
+        item.track.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <View>
@@ -47,7 +93,7 @@ const MusicListScreen = ({ route, navigation }) => {
                     style={styles.searchInput}
                     placeholder="Search for a song"
                     value={searchQuery}
-                    onChangeText={text => setSearchQuery(text)}
+                    onChangeText={(text) => setSearchQuery(text)}
                 />
             </View>
             <FlatList
@@ -62,18 +108,10 @@ const MusicListScreen = ({ route, navigation }) => {
                         />
                         <View style={styles.songInfo}>
                             <Text style={styles.trackText}>{item.track.name}</Text>
-                            <TouchableOpacity
-                                style={styles.playButton}
-                                onPress={() => playTrack(item.track.uri)}>
-                                <Text style={styles.playButtonText}>Play</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.playButton}
-                                onPress={togglePlayPause}>
-                                <Text style={styles.playButtonText}>
-                                    {isPlaying ? 'Continue' : 'Pause'}
-                                </Text>
-                            </TouchableOpacity>
+                            <PlayButton
+                                trackUri={item.track.uri}
+                                token={token}
+                            />
                         </View>
                     </View>
                 )}
@@ -81,6 +119,7 @@ const MusicListScreen = ({ route, navigation }) => {
         </View>
     );
 };
+
 const styles = StyleSheet.create({
     trackContainer: {
         marginTop: 20,
@@ -91,7 +130,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 10,
         paddingVertical: 5,
-        textAlign:"auto",
+        textAlign: 'auto',
         backgroundColor: 'white',
         borderRadius: 3,
         shadowColor: '#000',
@@ -111,7 +150,6 @@ const styles = StyleSheet.create({
     trackText: {
         fontSize: 14,
         marginTop: 5,
-
     },
     playButton: {
         backgroundColor: '#1DB954',
@@ -120,18 +158,20 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         alignSelf: 'flex-end',
         marginTop: 5,
-
     },
-    playButtonText: {
-        color: 'white',
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    backToList:{
-        color:'red',
+    backToList: {
+        color: 'red',
         borderRadius: 2,
+    },
+    searchContainer: {
+        padding: 10,
+        backgroundColor: '#f0f0f0',
+    },
+    searchInput: {
+        backgroundColor: 'white',
+        borderRadius: 5,
+        padding: 10,
+    },
+});
 
-    }
-
-})
 export default MusicListScreen;

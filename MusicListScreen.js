@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, TextInput } from 'react-native';
 import { Audio } from 'expo-av';
@@ -77,9 +75,26 @@ const MusicListScreen = ({ route, navigation }) => {
     const { mood, selectedStyle, tracks, token } = route.params;
     const [searchQuery, setSearchQuery] = useState('');
 
-    const filteredTracks = tracks.filter((item) =>
-        item.track.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+
+    const filteredTracks = tracks
+        .filter((item) =>
+            item.track.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+            item.track.preview_url
+        )
+        .sort((a, b) => {
+            const aName = a.track.name.toLowerCase();
+            const bName = b.track.name.toLowerCase();
+            const query = searchQuery.toLowerCase();
+
+            if (aName.startsWith(query) && !bName.startsWith(query)) {
+                return -1;
+            } else if (!aName.startsWith(query) && bName.startsWith(query)) {
+                return 1;
+            } else {
+                return aName.localeCompare(bName);
+            }
+        });
+
 
     return (
         <View>

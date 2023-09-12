@@ -137,7 +137,6 @@ const MusicStyles = ({route,  navigation}) => {
                 mood: selectedMood,
                 selectedStyle,
                 tracks: response.data.items,
-                playTrack,
                 token
             });
         } catch (error) {

@@ -10,7 +10,7 @@ import MusicListScreen from './MusicListScreen'; // Import the new component
 
 
 SplashScreen.preventAutoHideAsync();
-setTimeout(SplashScreen.hideAsync, 3000);
+setTimeout(SplashScreen.hideAsync, 1000);
 
 const Stack = createStackNavigator();
 

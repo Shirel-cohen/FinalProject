@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import {View, Text, TouchableOpacity, TextInput, Image, Linking, StyleSheet, FlatList} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Card } from 'galio-framework';
 import MusicListScreen from './MusicListScreen'; // Import the new component
 import * as Font from 'expo-font';
 
 const CLIENT_ID = '74e458b48ee2421289c45b9a57aa3b25';
-const REDIRECT_URI = 'exp://10.100.102.42:8081';
+const REDIRECT_URI = 'exp://192.168.68.107:8081';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 
@@ -172,17 +173,17 @@ const MusicStyles = ({route,  navigation}) => {
             ) : (
                 <TouchableOpacity
                     style={styles.loginButton}
-                    onPress={logout}>
-                    <Text style={styles.buttonText}>Logout</Text>
+                    onPress={logout}
+                >
+                    <Text style={styles.buttonText} >Logout</Text>
                 </TouchableOpacity>
             )}
 
             {token && (
                 <View style={styles.contentContainer}>
                     <View style={styles.moodContainer}>
-                        <Text>hello!</Text>
-                        <Text> We have identified that your mood is:{mood}</Text>
-                        <Text> Choose a song style and enjoy!</Text>
+                        <Text style={styles.textStyle}> We have identified that you are in a {mood} mood!</Text>
+                        <Text style={styles.textStyle}> Now you can choose the genre you would like to listen</Text>
                         {Object.keys(displayedMoodStyles).map(moodButton => (
                             <TouchableOpacity
                                 key={moodButton}
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#284B63',
+        backgroundColor: '#fff',
     },
     heading: {
         fontSize: 24,
@@ -238,6 +239,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 5,
         marginVertical: 10,
+    },
+    textStyle:{
+        color: '#000',
+        fontFamily: 'David',
+        fontSize: 26,
+        textAlign: "center"
     },
     buttonText: {
         color: 'white',
@@ -257,11 +264,12 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     moodButton: {
-        backgroundColor: '#cbd4e8',
-        width: '50%',
-        borderRadius:10,
+        backgroundColor: '#e365c1',
+        width: '65%',
+        borderRadius:30,
         paddingVertical: 5,
         margin: 5,
+        marginTop:20,
         alignItems:"center",
         textAlign:"center",
         alignSelf:"center",

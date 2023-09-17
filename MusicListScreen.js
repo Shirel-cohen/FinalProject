@@ -98,7 +98,7 @@ const MusicListScreen = ({ route, navigation }) => {
 
     return (
         <View>
-            <Text>Selected Mood: {mood}</Text>
+            <Text>Current Mood: {mood}</Text>
             <Text>Selected Style: {selectedStyle}</Text>
             <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Text style={styles.backToList}>Go Back to Music Styles</Text>

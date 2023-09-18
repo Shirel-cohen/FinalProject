@@ -51,7 +51,7 @@ export default function SelfieScreen() {
     };
 
     const analyzeMood = async (imageUri) => {
-        const apiUrl = "https://d6e1-79-178-69-229.ngrok.io";
+        const apiUrl = "https://feff-79-176-9-95.ngrok.io";
         const formData = new FormData();
         formData.append("image", {
             uri: imageUri,

@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
-import {Button, StyleSheet, Text, View, SafeAreaView, Image,} from "react-native";
+import { Button, StyleSheet, Text, View, SafeAreaView, Image, ActivityIndicator, Alert } from "react-native";
 import { Camera } from "expo-camera";
 import { shareAsync } from "expo-sharing";
 import * as MediaLibrary from "expo-media-library";
@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
 import * as Font from 'expo-font';
-import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 
 
 export default function SelfieScreen() {
@@ -19,6 +19,9 @@ export default function SelfieScreen() {
     const [photo, setPhoto] = useState();
     const [cameraType, setCameraType] = useState(Camera.Constants.Type.front);
     const [dominantEmotion, setDominantEmotion] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [confirmedMood, setConfirmedMood] = useState(null); // Add a state to track the confirmed mood
+    const [moodConfirmed, setMoodConfirmed] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -36,22 +39,22 @@ export default function SelfieScreen() {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
-                aspect: [5, 5], // You can adjust this aspect ratio as needed
+                aspect: [5, 5],
                 quality: 1,
             });
 
-            if (!result.cancelled) {
-                setPhoto(result);
+            if (!result.canceled && result.assets.length > 0) {
+                setPhoto(result.assets[0]);
+
                 // Analyze the mood in the selected image
-                await analyzeMood(result.assets[0].uri); // Use result.assets[0].uri
+                await analyzeMood(result.assets[0].uri);
             }
         } catch (error) {
             console.error("Error picking an image from the gallery:", error);
         }
     };
-
     const analyzeMood = async (imageUri) => {
-        const apiUrl = "https://feff-79-176-9-95.ngrok.io";
+        const apiUrl = " https://1189-46-116-1-219.ngrok.io ";
         const formData = new FormData();
         formData.append("image", {
             uri: imageUri,
@@ -60,28 +63,65 @@ export default function SelfieScreen() {
         });
 
         try {
+            setLoading(true); // Set loading state to true while waiting for the result
             const response = await axios.post(apiUrl, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            setDominantEmotion(response.data.mod);
 
-            console.log(response.data.mod);
+            if (response.data.mod === undefined) {
+                alert("We cannot recognize your emotion. Please try again.");
+                setPhoto(undefined);
+            } else {
+                setDominantEmotion(response.data.mod);
+                console.log(response.data.mod);
+                setConfirmedMood(response.data.mod);
+
+                // Ask the user to confirm the detected mood
+                Alert.alert(
+                    "Analysis Complete",
+                    `Is this your mood: ${response.data.mod}?`,
+                    [
+                        {
+                            text: "Yes",
+                            onPress: () => {
+                                // User confirmed, proceed to save and navigate to the next screen
+                             setMoodConfirmed(true)
+                                // Alert.alert("Mood Confirmed", "You can continue using the app.");
+                            },
+                        },
+                        {
+                            text: "No",
+                            onPress: () => {
+                                // User didn't confirm, reset the photo and allow taking a new picture
+                                setPhoto(undefined);
+                            },
+                        },
+                    ]
+                );
+            }
         } catch (error) {
             console.error("Error analyzing image:", error);
+        } finally {
+            setLoading(false); // Set loading state back to false when done
         }
     };
 
-    if (hasCameraPermission === undefined) {
-        return <Text>Requesting permission...</Text>;
-    } else if (!hasCameraPermission) {
-        return (
-            <Text>
-                Permission for the camera not granted. Please change this in settings.
-            </Text>
-        );
-    }
+    const saveAndNavigate = async () => {
+        try {
+            // Check if confirmedMood is set, and then save the photo
+            if (confirmedMood) {
+                await MediaLibrary.saveToLibraryAsync(photo.uri);
+                setPhoto(undefined);
+                navigation.navigate("MusicStyles", { mood: confirmedMood });
+            } else {
+                console.error("Confirmed mood is not set.");
+            }
+        } catch (error) {
+            console.error("Error saving image to library:", error);
+        }
+    };
 
     let takePic = async () => {
         let options = {
@@ -104,18 +144,20 @@ export default function SelfieScreen() {
         );
     };
 
+    if (hasCameraPermission === undefined) {
+        return <Text>Requesting permission...</Text>;
+    } else if (!hasCameraPermission) {
+        return (
+            <Text>
+                Permission for the camera not granted. Please change this in settings.
+            </Text>
+        );
+    }
+
     if (photo) {
         let sharePic = () => {
             shareAsync(photo.uri).then(() => {
-                setPhoto(undefined);
-            });
-        };
-
-        let savePic = async () => {
-            MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
-                setPhoto(undefined);
-                console.log(dominantEmotion);
-                navigation.navigate("MusicStyles", { mood: dominantEmotion });
+              //  setPhoto(undefined);
             });
         };
 
@@ -126,15 +168,26 @@ export default function SelfieScreen() {
                     source={{ uri: photo.uri }}
                 />
 
-                <Button title={"Share"} onPress={sharePic} color={"#5372af"} />
-                {hasMediaLibraryPermission ? (
-                    <Button title={"Save"} onPress={savePic} color={"#91a0b9"} />
+                {hasMediaLibraryPermission && moodConfirmed  ? (
+                    <Button title={"Start"} onPress={saveAndNavigate} color={"#91a0b9"} />
                 ) : undefined}
-                <Button
+                {moodConfirmed &&
+                    <SafeAreaView>
+                    <Button title={"Share"} onPress={sharePic} color={"#5372af"} />
+                    <Button
                     title={"Discard"}
-                    onPress={() => setPhoto(undefined)}
-                    color={"#afc0e3"}
-                />
+                onPress={() => setPhoto(undefined)}
+                color={"#afc0e3"}
+            />
+                    </SafeAreaView>
+                }
+                {/*<Button title={"Share"} onPress={sharePic} color={"#5372af"} />*/}
+
+                {/*<Button*/}
+                {/*    title={"Discard"}*/}
+                {/*    onPress={() => setPhoto(undefined)}*/}
+                {/*    color={"#afc0e3"}*/}
+                {/*/>*/}
             </SafeAreaView>
         );
     }
@@ -159,11 +212,15 @@ export default function SelfieScreen() {
                     />
                 </View>
             </View>
-            <Button
-                title={"Pick from Gallery"}
-                onPress={pickImage}
-                color={"#5372af"}
-            />
+            {loading ? (
+                <ActivityIndicator size="large" color="#5372af" />
+            ) : (
+                <Button
+                    title={"Pick from Gallery"}
+                    onPress={pickImage}
+                    color={"#5372af"}
+                />
+            )}
             <StatusBar style={"auto"} />
         </Camera>
     );

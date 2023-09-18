@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, TextInput } 
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'; // Import the axios library
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
 const PlayButton = ({ trackUri, token }) => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -28,6 +30,7 @@ const PlayButton = ({ trackUri, token }) => {
                 const spotifyResponse = await axios.get(`https://api.spotify.com/v1/tracks/${trackId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
+
                     },
                 });
 
@@ -97,11 +100,11 @@ const MusicListScreen = ({ route, navigation }) => {
 
 
     return (
-        <View>
-            <Text>Current Mood: {mood}</Text>
-            <Text>Selected Style: {selectedStyle}</Text>
+        <View style={styles.container}>
+            {/*<Text style={styles.text} >Current Mood: {mood}</Text>*/}
+            <Text style={styles.text}>Selected Style: {selectedStyle}</Text>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Text style={styles.backToList}>Go Back to Music Styles</Text>
+                {/*<Text style={styles.backToList}>Go Back to Music Styles</Text>*/}
             </TouchableOpacity>
             <View style={styles.searchContainer}>
                 <TextInput
@@ -136,8 +139,13 @@ const MusicListScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#000'
+    },
     trackContainer: {
         marginTop: 20,
+        backgroundColor: '#000'
+
     },
     trackItem: {
         flexDirection: 'row',
@@ -146,7 +154,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         paddingVertical: 5,
         textAlign: 'auto',
-        backgroundColor: 'white',
+        backgroundColor: 'black',
         borderRadius: 3,
         shadowColor: '#000',
         shadowOffset: {
@@ -156,6 +164,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 1.65,
         elevation: 2,
+
     },
     songInfo: {
         flex: 1,
@@ -165,6 +174,8 @@ const styles = StyleSheet.create({
     trackText: {
         fontSize: 14,
         marginTop: 5,
+        color:'white'
+
     },
     playButton: {
         backgroundColor: '#1DB954',
@@ -180,13 +191,20 @@ const styles = StyleSheet.create({
     },
     searchContainer: {
         padding: 10,
-        backgroundColor: '#f0f0f0',
+        // backgroundColor: '#000000',
     },
     searchInput: {
         backgroundColor: 'white',
         borderRadius: 5,
         padding: 10,
     },
+    text:{
+        color:'#ffffff',
+        alignItems: 'center',
+        textAlign: 'center'
+
+    }
 });
 
 export default MusicListScreen;
+

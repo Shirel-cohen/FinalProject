@@ -7,8 +7,6 @@ import MusicStyles from "./MusicStyles";
 import * as SplashScreen from 'expo-splash-screen';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import MusicListScreen from './MusicListScreen'; // Import the new component
-
-
 SplashScreen.preventAutoHideAsync();
 setTimeout(SplashScreen.hideAsync, 1000);
 
@@ -107,12 +105,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginTop: 100,
+
     },
     text: {
         color: '#fff',
         fontSize: 22,
         textAlign:"center",
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+
     },
     image: {
         width: 200,

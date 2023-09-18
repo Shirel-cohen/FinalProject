@@ -214,6 +214,7 @@ const genreImages = {
                                 <TouchableOpacity
                                     key={moodButton}
                                     onPress={() => navigateToMusicListScreen(moodButton.toLowerCase())}
+                                    style={styles.genreButton} // Apply the genreButton style here
                                 >
                                     <Image source={genreImages[moodButton.toLowerCase()]} style={styles.image} />
                                     <Text>{moodButton}</Text>
@@ -243,6 +244,27 @@ const genreImages = {
             </View>
         );
     };
+
+// const genreButtonStyles = {
+//     pop: {
+//         flexDirection: 'column', // Vertical layout
+//         alignItems: 'center',    // Center horizontally
+//         justifyContent: 'center', // Center vertically
+//         marginBottom: 10,        // Space between buttons
+//     },
+//     hiphop: {
+//         flexDirection: 'row', // Horizontal layout
+//         alignItems: 'flex-start', // Align items to the top
+//         justifyContent: 'flex-start', // Align items to the start
+//         marginTop: 20, // Space between buttons
+//     },
+//     electronic: {
+//         flexDirection: 'row', // Horizontal layout
+//         alignItems: 'flex-end', // Align items to the bottom
+//         justifyContent: 'flex-end', // Align items to the end
+//     },
+//     // Add styles for other genres as needed
+// };
 
     const styles = StyleSheet.create({
         container: {
@@ -280,6 +302,9 @@ const genreImages = {
         },
         moodContainer: {
             marginBottom: 20,
+            flexDirection: 'row', // Make it a row container
+            flexWrap: 'wrap', // Allow wrapping to the next row
+            justifyContent: 'center',
         },
         moodTitle: {
             fontSize: 18,
@@ -347,6 +372,11 @@ const genreImages = {
             width: 100, // Set the width of the image as needed
             height: 100, // Set the height of the image as needed
             resizeMode: 'contain', // Adjust the resizeMode as needed (cover, contain, stretch, etc.)
+        },
+        genreButton: {
+            width: '50%', // Each genre takes half of the container width
+            alignItems: 'center',
+            marginBottom: 10, // Space between rows
         },
     });
 

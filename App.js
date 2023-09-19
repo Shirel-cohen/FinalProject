@@ -9,10 +9,16 @@ import AppIntroSlider from 'react-native-app-intro-slider';
 import MusicListScreen from './MusicListScreen'; // Import the new component
 SplashScreen.preventAutoHideAsync();
 setTimeout(SplashScreen.hideAsync, 1000);
+import {useFonts} from "expo-font";
+import * as ExpoSplashScreen from "expo-splash-screen/src/ExpoSplashScreen";
+import AppLoading from "expo-app-loading";
+
+
 
 const Stack = createStackNavigator();
 
 export default function App() {
+
 
     const [show_Main_App, setShow_Main_App] = useState(false);
 
@@ -33,13 +39,23 @@ export default function App() {
                     alignItems: 'center',
                     justifyContent: 'space-around',
                     paddingBottom: 100,
+
                 }}>
-                <Text style={styles.title}>{item.title}</Text>
+                <Text style={[styles.title, item.titleStyle, {fontFamily: 'Lemon-Regular'}]}>{item.title}</Text>
                 <Image style={styles.image} source={item.image} />
-                <Text style={styles.text}>{item.text}</Text>
+                <Text style={[styles.text, item.textStyle, {fontFamily: 'Lemon-Regular'}]}>{item.text}</Text>
             </View>
         );
     };
+    let [fontsLoaded] = useFonts({
+        'Lemon-Regular' : require('./assets/fonts/Lemon-Regular.ttf')
+    })
+
+    if (!fontsLoaded){
+        SplashScreen.preventAutoHideAsync()
+        SplashScreen.hideAsync()    } else {
+
+
 
     if (show_Main_App) {
         return (
@@ -51,13 +67,15 @@ export default function App() {
                         options={{
                             title: 'Let\'s take a picture 📷',
                             headerTitleAlign: 'center',
+                            headerTitleStyle: {fontFamily:'Lemon-Regular'}
                         }}
                     />
                     <Stack.Screen
                         name="MusicStyles"
                         component={MusicStyles}
                         options={{
-                            headerTitleAlign:"center"
+                            headerTitleAlign:"center",
+                            headerTitleStyle: {fontFamily:'Lemon-Regular'}
                         }}
                     />
                     <Stack.Screen
@@ -72,9 +90,9 @@ export default function App() {
         return (
             <AppIntroSlider slides={slides} onDone={on_Done_all_slides}
                             showSkipButton={true}
-                            onSkip={on_Skip_slides} data={slides} renderItem={RenderItem}/>
+                            onSkip={on_Skip_slides} data={slides} renderItem={RenderItem} />
         );
-    }
+    }}
 }
 
 
@@ -86,6 +104,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         textAlign:'center',
         backgroundColor:'#000000',
+        fontFamily:'Lemon-Regular'
     },
     logo: {
         width: 200,
@@ -97,7 +116,8 @@ const styles = StyleSheet.create({
         paddingTop: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20
+        padding: 20,
+        fontFamily:'Lemon-Regular'
     },
     title: {
         fontSize: 34,
@@ -105,6 +125,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginTop: 100,
+        fontFamily: 'Lemon-Regular'
 
     },
     text: {
@@ -112,13 +133,15 @@ const styles = StyleSheet.create({
         fontSize: 22,
         textAlign:"center",
         fontWeight: 'bold',
+        fontFamily: 'Lemon-Regular'
 
     },
     image: {
         width: 200,
         height: 200,
         resizeMode: 'contain'
-    }
+    },
+
 });
 
 const slides = [
@@ -128,6 +151,8 @@ const slides = [
         text: 'Let us tell you about our app',
         image: require('./assets/musical-note.png'),
         backgroundColor: '#F7BB64',
+
+
     },
     {
         key: 'k2',
@@ -137,6 +162,7 @@ const slides = [
             'analyze your current mood ',
         image: require('./assets/emoticons.png'),
         backgroundColor: '#F4B1BA',
+
     },
     {
         key: 'k3',
@@ -146,6 +172,8 @@ const slides = [
             'based on your feelings',
         image: require('./assets/spotify.png') ,
         backgroundColor: '#4093D2',
+
+
     },
     {
         key: 'k4',
@@ -153,5 +181,7 @@ const slides = [
         text: 'Let\'s take a picture!' ,
         image: require('./assets/photo-camera.png'),
         backgroundColor: '#644EE2',
+
+
     }
 ];

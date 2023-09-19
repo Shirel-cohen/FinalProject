@@ -174,7 +174,9 @@ const styles = StyleSheet.create({
     trackText: {
         fontSize: 14,
         marginTop: 5,
-        color:'white'
+        color:'white',
+        fontFamily: 'Lemon-Regular'
+
 
     },
     playButton: {
@@ -197,11 +199,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 5,
         padding: 10,
+        fontFamily: 'Lemon-Regular'
+
     },
     text:{
         color:'#ffffff',
         alignItems: 'center',
-        textAlign: 'center'
+        textAlign: 'center',
+        fontFamily: 'Lemon-Regular'
+
 
     }
 });

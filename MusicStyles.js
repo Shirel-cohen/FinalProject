@@ -4,7 +4,6 @@ import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MusicListScreen from './MusicListScreen'; // Import the new component
 import * as Font from 'expo-font';
-import ListeningHistoryScreen from './ListeningHistoryScreen'; // Import the new component
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation from react-navigation/native
 import { Card } from 'galio-framework';
 
@@ -246,7 +245,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#000'
+        backgroundColor: '#000',
+        fontFamily: 'Lemon-Regular', // Apply your custom font here
+
     },
     heading: {
         fontSize: 24,
@@ -259,6 +260,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
     loginButton: {
+        fontFamily:'Lemon-Regular',
         backgroundColor: '#1DB954',
         paddingVertical: 10,
         paddingHorizontal: 20,
@@ -269,12 +271,17 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         textAlign: "center",
+        fontFamily: 'Lemon-Regular', // Apply your custom font here
+
+
 
     },
     buttonText: {
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
+        fontFamily: 'Lemon-Regular', // Apply your custom font here
+
 
     },
     moodContainer: {
@@ -287,6 +294,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
+        fontFamily: 'Lemon-Regular'
+
 
     },
     styleContainer: {
@@ -302,7 +311,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         textAlign: "center",
         alignSelf: "center",
-         color: '#ffffff'
+         color: '#98e8b0',
+         fontFamily:'Lemon-Regular'
     },
     selectedMoodButton: {
         backgroundColor: '#1DB954',
@@ -334,6 +344,8 @@ const styles = StyleSheet.create({
     },
     trackText: {
         fontSize: 14,
+        fontFamily: 'Lemon-Regular'
+
     },
     playButton: {
         backgroundColor: '#1DB954',

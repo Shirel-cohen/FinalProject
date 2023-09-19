@@ -1,6 +1,16 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, StyleSheet, Text, View, SafeAreaView, Image, ActivityIndicator, Alert } from "react-native";
+import {
+    Button,
+    StyleSheet,
+    Text,
+    View,
+    SafeAreaView,
+    Image,
+    ActivityIndicator,
+    Alert,
+    TouchableOpacity
+} from "react-native";
 import { Camera } from "expo-camera";
 import { shareAsync } from "expo-sharing";
 import * as MediaLibrary from "expo-media-library";
@@ -54,7 +64,7 @@ export default function SelfieScreen() {
         }
     };
     const analyzeMood = async (imageUri) => {
-        const apiUrl = " https://1189-46-116-1-219.ngrok.io ";
+        const apiUrl = "https://487f-46-116-1-219.ngrok.io ";
         const formData = new FormData();
         formData.append("image", {
             uri: imageUri,
@@ -169,16 +179,17 @@ export default function SelfieScreen() {
                 />
 
                 {hasMediaLibraryPermission && moodConfirmed  ? (
-                    <Button title={"Start"} onPress={saveAndNavigate} color={"#91a0b9"} />
+                    <TouchableOpacity  onPress={saveAndNavigate} style={{backgroundColor:"#91a0b9",padding: 10}}>
+                        <Text style={styles.buttonText}>Start</Text></TouchableOpacity>
+
+
                 ) : undefined}
                 {moodConfirmed &&
                     <SafeAreaView>
-                    <Button title={"Share"} onPress={sharePic} color={"#5372af"} />
-                    <Button
-                    title={"Discard"}
-                onPress={() => setPhoto(undefined)}
-                color={"#afc0e3"}
-            />
+                        <TouchableOpacity  onPress={sharePic} style={{backgroundColor:"#5372af",padding: 10}}>
+                            <Text style={styles.buttonText}>Share</Text></TouchableOpacity>
+                        <TouchableOpacity  onPress={() => setPhoto(undefined)} style={{backgroundColor:"#afc0e3",padding: 10}}>
+                            <Text style={styles.buttonText}>Discard</Text></TouchableOpacity>
                     </SafeAreaView>
                 }
                 {/*<Button title={"Share"} onPress={sharePic} color={"#5372af"} />*/}
@@ -215,11 +226,12 @@ export default function SelfieScreen() {
             {loading ? (
                 <ActivityIndicator size="large" color="#5372af" />
             ) : (
-                <Button
-                    title={"Pick from Gallery"}
+
+                <TouchableOpacity
                     onPress={pickImage}
-                    color={"#5372af"}
-                />
+                    style={{backgroundColor:"#5372af",padding: 10, borderRadius: 5,}}>
+                    <Text style={styles.buttonText}>Pick from Gallery</Text>
+                </TouchableOpacity>
             )}
             <StatusBar style={"auto"} />
         </Camera>
@@ -231,12 +243,14 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "stretch",
         justifyContent: "center",
+        fontFamily:'Lemon-Regular'
     },
     buttonContainer: {
         alignItems: "center",
         justifyContent: "flex-end",
         flexDirection: "column",
         flex: 1,
+
     },
     iconButton: {
         flexDirection: "row",
@@ -248,5 +262,11 @@ const styles = StyleSheet.create({
     preview: {
         alignSelf: "stretch",
         flex: 1,
+    },
+    buttonText: {
+        fontFamily: 'Lemon-Regular', // Apply your custom font here
+        fontSize: 16,
+        color: '#ffffff',
+        textAlign: 'center',
     },
 });

@@ -10,8 +10,7 @@ import MusicListScreen from './MusicListScreen'; // Import the new component
 SplashScreen.preventAutoHideAsync();
 setTimeout(SplashScreen.hideAsync, 1000);
 import {useFonts} from "expo-font";
-import * as ExpoSplashScreen from "expo-splash-screen/src/ExpoSplashScreen";
-import AppLoading from "expo-app-loading";
+import { StatusBar } from 'expo-status-bar';
 
 
 
@@ -65,25 +64,31 @@ export default function App() {
                         name="SelfieScreen"
                         component={SelfieScreen}
                         options={{
-                            title: 'Let\'s take a picture 📷',
-                            headerTitleAlign: 'center',
-                            headerTitleStyle: {fontFamily:'Lemon-Regular'}
+                            // title: 'Let\'s take a picture 📷',
+                            // headerTitleAlign: 'center',
+                            // headerTitleStyle: {fontFamily:'Lemon-Regular'}
+                            headerShown: false
                         }}
                     />
                     <Stack.Screen
                         name="MusicStyles"
                         component={MusicStyles}
                         options={{
-                            headerTitleAlign:"center",
-                            headerTitleStyle: {fontFamily:'Lemon-Regular'}
+                            // headerTitleAlign:"center",
+                            // headerTitleStyle: {fontFamily:'Lemon-Regular'}
+                            headerShown: false
                         }}
                     />
                     <Stack.Screen
                         name="MusicList"
                         component={MusicListScreen}
+                        options={{
+                            headerShown: false
+                        }}
                     />
 
                 </Stack.Navigator>
+                <StatusBar style="light" />
             </NavigationContainer>
         );
     } else {

@@ -1,23 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
-import {
-    Button,
-    StyleSheet,
-    Text,
-    View,
-    SafeAreaView,
-    Image,
-    ActivityIndicator,
-    Alert,
-    TouchableOpacity
-} from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, Image, ActivityIndicator, Alert, TouchableOpacity} from "react-native";
 import { Camera } from "expo-camera";
 import { shareAsync } from "expo-sharing";
 import * as MediaLibrary from "expo-media-library";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
-import * as Font from 'expo-font';
 import { Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 
 
@@ -32,6 +21,8 @@ export default function SelfieScreen() {
     const [loading, setLoading] = useState(false);
     const [confirmedMood, setConfirmedMood] = useState(null); // Add a state to track the confirmed mood
     const [moodConfirmed, setMoodConfirmed] = useState(false);
+    const [showLoadingAlert, setShowLoadingAlert] = useState(false);
+    const [analyzingMood, setAnalyzingMood] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -43,6 +34,14 @@ export default function SelfieScreen() {
             );
         })();
     }, []);
+
+    useEffect(() => {
+        if (analyzingMood) {
+            setShowLoadingAlert(true);
+        } else {
+            setShowLoadingAlert(false);
+        }
+    }, [analyzingMood]);
 
     const pickImage = async () => {
         try {
@@ -63,8 +62,9 @@ export default function SelfieScreen() {
             console.error("Error picking an image from the gallery:", error);
         }
     };
+
     const analyzeMood = async (imageUri) => {
-        const apiUrl = "https://487f-46-116-1-219.ngrok.io ";
+        const apiUrl = "https://34bc-79-176-9-95.ngrok.io";
         const formData = new FormData();
         formData.append("image", {
             uri: imageUri,
@@ -73,7 +73,8 @@ export default function SelfieScreen() {
         });
 
         try {
-            setLoading(true); // Set loading state to true while waiting for the result
+            setAnalyzingMood(true); // Set analyzingMood to true while waiting for the result
+
             const response = await axios.post(apiUrl, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -97,8 +98,7 @@ export default function SelfieScreen() {
                             text: "Yes",
                             onPress: () => {
                                 // User confirmed, proceed to save and navigate to the next screen
-                             setMoodConfirmed(true)
-                                // Alert.alert("Mood Confirmed", "You can continue using the app.");
+                                setMoodConfirmed(true);
                             },
                         },
                         {
@@ -114,7 +114,7 @@ export default function SelfieScreen() {
         } catch (error) {
             console.error("Error analyzing image:", error);
         } finally {
-            setLoading(false); // Set loading state back to false when done
+            setAnalyzingMood(false); // Set analyzingMood back to false when done
         }
     };
 
@@ -134,16 +134,23 @@ export default function SelfieScreen() {
     };
 
     let takePic = async () => {
-        let options = {
-            quality: 1,
-            base64: true,
-            exif: false,
-        };
+        try {
+            setAnalyzingMood(true);
+            setShowLoadingAlert(true);
 
-        let newPhoto = await cameraRef.current.takePictureAsync(options);
-        setPhoto(newPhoto);
-        // Analyze the mood in the taken picture
-        await analyzeMood(newPhoto.uri);
+            let options = {
+                quality: 1,
+                base64: true,
+                exif: false,
+            };
+
+            let newPhoto = await cameraRef.current.takePictureAsync(options);
+            setPhoto(newPhoto);
+            await analyzeMood(newPhoto.uri);
+        } finally {
+            setShowLoadingAlert(false);
+            setAnalyzingMood(false);
+        }
     };
 
     let toggleCamera = () => {
@@ -180,7 +187,7 @@ export default function SelfieScreen() {
 
                 {hasMediaLibraryPermission && moodConfirmed  ? (
                     <TouchableOpacity  onPress={saveAndNavigate} style={{backgroundColor:"#91a0b9",padding: 10}}>
-                        <Text style={styles.buttonText}>Start</Text></TouchableOpacity>
+                        <Text style={styles.buttonText}>Continue</Text></TouchableOpacity>
 
 
                 ) : undefined}
@@ -192,13 +199,14 @@ export default function SelfieScreen() {
                             <Text style={styles.buttonText}>Discard</Text></TouchableOpacity>
                     </SafeAreaView>
                 }
-                {/*<Button title={"Share"} onPress={sharePic} color={"#5372af"} />*/}
 
-                {/*<Button*/}
-                {/*    title={"Discard"}*/}
-                {/*    onPress={() => setPhoto(undefined)}*/}
-                {/*    color={"#afc0e3"}*/}
-                {/*/>*/}
+                {showLoadingAlert && (
+                    <View style={styles.loadingAlert}>
+                        <ActivityIndicator size="large" color="#5372af" />
+                    </View>
+                )}
+
+                <StatusBar style={"auto"} />
             </SafeAreaView>
         );
     }
@@ -223,16 +231,21 @@ export default function SelfieScreen() {
                     />
                 </View>
             </View>
-            {loading ? (
-                <ActivityIndicator size="large" color="#5372af" />
-            ) : (
 
+            {!showLoadingAlert && (
                 <TouchableOpacity
                     onPress={pickImage}
-                    style={{backgroundColor:"#5372af",padding: 10, borderRadius: 5,}}>
+                    style={{ backgroundColor: "#5372af", padding: 10, borderRadius: 5 }}>
                     <Text style={styles.buttonText}>Pick from Gallery</Text>
                 </TouchableOpacity>
             )}
+
+            {analyzingMood && (
+                <View style={styles.loadingAlert}>
+                    <ActivityIndicator size="large" color="#5372af" />
+                </View>
+            )}
+
             <StatusBar style={"auto"} />
         </Camera>
     );
@@ -268,5 +281,15 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#ffffff',
         textAlign: 'center',
+    },
+    loadingAlert: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)", // Background color with some opacity
     },
 });

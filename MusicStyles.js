@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import {View, Text, TouchableOpacity, TextInput, Image, Linking, StyleSheet, FlatList} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import MusicListScreen from './MusicListScreen'; // Import the new component
-import * as Font from 'expo-font';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation from react-navigation/native
-import { Card } from 'galio-framework';
+
 
 const CLIENT_ID = '74e458b48ee2421289c45b9a57aa3b25';
-const REDIRECT_URI = 'exp://10.100.102.42:8081';
+const REDIRECT_URI = 'exp://192.168.68.107:8081';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 
@@ -188,18 +185,10 @@ const MusicStyles = ({route,  navigation}) => {
                     <Text style={styles.buttonText}>Login to Spotify</Text>
                 </TouchableOpacity>
             ) : (
-                <TouchableOpacity
-                    style={styles.loginButton}
-                    onPress={logout}>
-                    <Text style={styles.buttonText}>Logout</Text>
-                </TouchableOpacity>
-            )}
-
-            {token && (
                 <View style={styles.contentContainer}>
                     <View style={styles.moodContainer}>
                         {hasSelectedMood ? (
-                            <Text style={styles.textStyle}>Choose the genre you would like to listen</Text>
+                            <Text style={styles.textStyle}>Now you can choose the genre you would like to listen to</Text>
                         ) : (
                             <Text style={styles.textStyle}>
                                 {!selectedMood ? "Choose a mood from the list" : "Choose the genre you would like to listen"}
@@ -237,9 +226,18 @@ const MusicStyles = ({route,  navigation}) => {
                     )}
                 </View>
             )}
+
+            {token && (
+                <View style={styles.logoutContainer}>
+                    <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+                        <Text style={styles.buttonText}>Logout</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </View>
     );
 };
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -258,6 +256,18 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         paddingHorizontal: 10,
+        paddingBottom: 20,
+    },
+    logoutContainer: {
+        position: 'absolute',
+        bottom: 50,
+        alignSelf: 'center', // Center the container horizontally
+    },
+    logoutButton: {
+        backgroundColor: '#1DB954',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
     },
     loginButton: {
         fontFamily:'Lemon-Regular',
@@ -269,12 +279,10 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 22,
         textAlign: "center",
-        fontFamily: 'Lemon-Regular', // Apply your custom font here
-
-
-
+        fontFamily: 'Lemon-Regular',
+        marginBottom: 20, // Add margin at the bottom of the text
     },
     buttonText: {
         color: 'white',
@@ -285,6 +293,7 @@ const styles = StyleSheet.create({
 
     },
     moodContainer: {
+        marginTop: 130, // Increase the top margin to move everything down
         marginBottom: 20,
         flexDirection: 'row', // Make it a row container
         flexWrap: 'wrap', // Allow wrapping to the next row
@@ -302,17 +311,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
     },
-     moodButton: {
+    moodButton: {
         backgroundColor: '#000000',
         width: '65%',
-         borderRadius: 30,
-        paddingVertical: 5,
-        margin: 5,
+        borderRadius: 30,
+        paddingVertical: 50, // Increase the vertical padding to create more space
+        paddingHorizontal: 30, // Increase the horizontal padding for better alignment
+        margin: 15, // Increase the margin between mood buttons
         alignItems: "center",
         textAlign: "center",
         alignSelf: "center",
-         color: '#98e8b0',
-         fontFamily:'Lemon-Regular'
+        color: '#98e8b0',
+        fontFamily: 'Lemon-Regular',
     },
     selectedMoodButton: {
         backgroundColor: '#1DB954',

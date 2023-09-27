@@ -3,8 +3,6 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, TextInput } 
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'; // Import the axios library
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
 const PlayButton = ({ trackUri, token }) => {
     const [isPlaying, setIsPlaying] = useState(false);

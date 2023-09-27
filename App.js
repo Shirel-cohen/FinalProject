@@ -56,48 +56,48 @@ export default function App() {
 
 
 
-    if (show_Main_App) {
-        return (
-            <NavigationContainer>
-                <Stack.Navigator>
-                    <Stack.Screen
-                        name="SelfieScreen"
-                        component={SelfieScreen}
-                        options={{
-                            // title: 'Let\'s take a picture 📷',
-                            // headerTitleAlign: 'center',
-                            // headerTitleStyle: {fontFamily:'Lemon-Regular'}
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="MusicStyles"
-                        component={MusicStyles}
-                        options={{
-                            // headerTitleAlign:"center",
-                            // headerTitleStyle: {fontFamily:'Lemon-Regular'}
-                            headerShown: false
-                        }}
-                    />
-                    <Stack.Screen
-                        name="MusicList"
-                        component={MusicListScreen}
-                        options={{
-                            headerShown: false
-                        }}
-                    />
+        if (show_Main_App) {
+            return (
+                <NavigationContainer>
+                    <Stack.Navigator>
+                        <Stack.Screen
+                            name="SelfieScreen"
+                            component={SelfieScreen}
+                            options={{
+                                // title: 'Let\'s take a picture 📷',
+                                // headerTitleAlign: 'center',
+                                // headerTitleStyle: {fontFamily:'Lemon-Regular'}
+                                headerShown: false
+                            }}
+                        />
+                        <Stack.Screen
+                            name="MusicStyles"
+                            component={MusicStyles}
+                            options={{
+                                // headerTitleAlign:"center",
+                                // headerTitleStyle: {fontFamily:'Lemon-Regular'}
+                                headerShown: false
+                            }}
+                        />
+                        <Stack.Screen
+                            name="MusicList"
+                            component={MusicListScreen}
+                            options={{
+                                headerShown: false
+                            }}
+                        />
 
-                </Stack.Navigator>
-                <StatusBar style="light" />
-            </NavigationContainer>
-        );
-    } else {
-        return (
-            <AppIntroSlider slides={slides} onDone={on_Done_all_slides}
-                            showSkipButton={true}
-                            onSkip={on_Skip_slides} data={slides} renderItem={RenderItem} />
-        );
-    }}
+                    </Stack.Navigator>
+                    <StatusBar style="light" />
+                </NavigationContainer>
+            );
+        } else {
+            return (
+                <AppIntroSlider slides={slides} onDone={on_Done_all_slides}
+                                showSkipButton={true}
+                                onSkip={on_Skip_slides} data={slides} renderItem={RenderItem} />
+            );
+        }}
 }
 
 

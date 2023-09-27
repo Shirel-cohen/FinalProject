@@ -23,16 +23,16 @@ export default function SelfieScreen() {
     const [moodConfirmed, setMoodConfirmed] = useState(false);
     const [showLoadingAlert, setShowLoadingAlert] = useState(false);
     const [analyzingMood, setAnalyzingMood] = useState(false);
+    const [cameraKey, setCameraKey] = useState(new Date().getTime());
+
 
     useEffect(() => {
-        (async () => {
-            const cameraPermission = await Camera.requestCameraPermissionsAsync();
-            const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
-            setHasCameraPermission(cameraPermission.status === "granted");
-            setHasMediaLibraryPermission(
-                mediaLibraryPermission.status === "granted"
-            );
-        })();
+        // Cleanup function to release camera resources when leaving the screen
+        return () => {
+            if (cameraRef.current) {
+                cameraRef.current.release();
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -42,6 +42,26 @@ export default function SelfieScreen() {
             setShowLoadingAlert(false);
         }
     }, [analyzingMood]);
+
+    const cameraPermissionFunction =async () => {
+            const cameraPermission = await Camera.requestCameraPermissionsAsync();
+            const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
+            setHasCameraPermission(cameraPermission.status === "granted");
+            setHasMediaLibraryPermission(
+                mediaLibraryPermission.status === "granted"
+            );
+        };
+        useEffect(() => {
+            cameraPermissionFunction(); // Call the camera permission function initially
+
+            // Navigation listener to set a new cameraKey when navigating to this screen
+            const unsubscribe = navigation.addListener("focus", () => {
+                cameraPermissionFunction(); // Call the camera permission function when the screen comes into focus
+                setCameraKey(new Date().getTime()); // Change the key to remount the Camera component
+            });
+
+            return unsubscribe; // Cleanup listener when unmounting the component
+        }, [navigation]);
 
     const pickImage = async () => {
         try {
@@ -64,7 +84,7 @@ export default function SelfieScreen() {
     };
 
     const analyzeMood = async (imageUri) => {
-        const apiUrl = "https://34bc-79-176-9-95.ngrok.io";
+        const apiUrl = "https://fd04-46-116-1-219.ngrok.io";
         const formData = new FormData();
         formData.append("image", {
             uri: imageUri,
@@ -125,6 +145,7 @@ export default function SelfieScreen() {
                 await MediaLibrary.saveToLibraryAsync(photo.uri);
                 setPhoto(undefined);
                 navigation.navigate("MusicStyles", { mood: confirmedMood });
+
             } else {
                 console.error("Confirmed mood is not set.");
             }
@@ -132,9 +153,13 @@ export default function SelfieScreen() {
             console.error("Error saving image to library:", error);
         }
     };
-
+    const resetCamera = () => {
+        setCameraKey(new Date().getTime());
+        setCameraType(Camera.Constants.Type.front); // Reset camera type
+    };
     let takePic = async () => {
         try {
+
             setAnalyzingMood(true);
             setShowLoadingAlert(true);
 
@@ -147,12 +172,18 @@ export default function SelfieScreen() {
             let newPhoto = await cameraRef.current.takePictureAsync(options);
             setPhoto(newPhoto);
             await analyzeMood(newPhoto.uri);
+            resetCamera();
         } finally {
             setShowLoadingAlert(false);
             setAnalyzingMood(false);
         }
     };
-
+    const resetStates = () => {
+        // Reset your states here
+        setPhoto(null);
+        setMoodConfirmed(false);
+        // Add other state resets as needed
+    };
     let toggleCamera = () => {
         setCameraType(
             cameraType === Camera.Constants.Type.back
@@ -174,7 +205,7 @@ export default function SelfieScreen() {
     if (photo) {
         let sharePic = () => {
             shareAsync(photo.uri).then(() => {
-              //  setPhoto(undefined);
+                //  setPhoto(undefined);
             });
         };
 
@@ -212,14 +243,14 @@ export default function SelfieScreen() {
     }
 
     return (
-        <Camera style={styles.container} ref={cameraRef} type={cameraType}>
+        <Camera key={cameraKey} style={styles.container} ref={cameraRef} type={cameraType}>
             <View style={styles.buttonContainer}>
                 <View style={styles.iconButton}>
                     <Ionicons
                         name="camera"
                         size={32}
                         color="#000"
-                        onPress={takePic}
+                    onPress={takePic}
                     />
                 </View>
                 <View style={styles.iconButton}>

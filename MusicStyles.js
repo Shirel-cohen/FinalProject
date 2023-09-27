@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import {View, Text, TouchableOpacity, TextInput, Image, Linking, StyleSheet, FlatList} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { Camera } from "expo-camera"; // Import Camera only from expo-camera
 
 
 const CLIENT_ID = '74e458b48ee2421289c45b9a57aa3b25';
-const REDIRECT_URI = 'exp://192.168.68.107:8081';
+const REDIRECT_URI = 'exp://10.100.102.42:8081';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 
@@ -175,9 +177,25 @@ const MusicStyles = ({route,  navigation}) => {
             console.error('Error playing track:', error);
         }
     };
+    const navigateToSelfieScreen = async () => {
+        // Request camera permission here (remove media library permission request)
+        const cameraPermission = await Camera.requestCameraPermissionsAsync();
+        const hasCameraPermission = cameraPermission.status === "granted";
+        if (hasCameraPermission) {
+            // Navigate to SelfieScreen only if camera permission is granted
+            navigation.navigate("SelfieScreen");
+        } else {
+            // Handle the case where camera permission is not granted
+            // You can display an error message or take appropriate action
+            // For example:
+            alert("Please grant camera permission in settings.");
+        }
+    };
+
 
     return (
         <View style={styles.container}>
+
             {!token ? (
                 <TouchableOpacity
                     style={styles.loginButton}
@@ -189,11 +207,13 @@ const MusicStyles = ({route,  navigation}) => {
                     <View style={styles.moodContainer}>
                         {hasSelectedMood ? (
                             <Text style={styles.textStyle}>Now you can choose the genre you would like to listen to</Text>
+
                         ) : (
                             <Text style={styles.textStyle}>
                                 {!selectedMood ? "Choose a mood from the list" : "Choose the genre you would like to listen"}
                             </Text>
                         )}
+
                         {Object.keys(displayedMoodStyles).map(moodButton => (
                             <TouchableOpacity
                                 key={moodButton}
@@ -203,6 +223,7 @@ const MusicStyles = ({route,  navigation}) => {
                                 {!Object.keys(MOOD_PLAYLISTS).includes(mood.toLowerCase()) && (
                                     <Text style={styles.moodButton}>{moodButton}</Text>
                                 )}
+
                             </TouchableOpacity>
                         ))}
                     </View>
@@ -226,6 +247,13 @@ const MusicStyles = ({route,  navigation}) => {
                     )}
                 </View>
             )}
+            {/*<TouchableOpacity onPress={navigateToSelfieScreen} style={styles.backButton}>*/}
+            {/*    <Text style={styles.backToList}>Take a Selfie</Text>*/}
+            {/*</TouchableOpacity>*/}
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                <Text style={styles.backToList}>Back</Text>
+            </TouchableOpacity>
+
 
             {token && (
                 <View style={styles.logoutContainer}>
@@ -241,8 +269,8 @@ const MusicStyles = ({route,  navigation}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        // justifyContent: 'center',
+        // alignItems: 'center',
         backgroundColor: '#000',
         fontFamily: 'Lemon-Regular', // Apply your custom font here
 
@@ -260,7 +288,7 @@ const styles = StyleSheet.create({
     },
     logoutContainer: {
         position: 'absolute',
-        bottom: 50,
+        bottom: 30,
         alignSelf: 'center', // Center the container horizontally
     },
     logoutButton: {
@@ -270,12 +298,14 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     loginButton: {
-        fontFamily:'Lemon-Regular',
+        position: 'absolute',
+        top: 350,
+        alignSelf: 'center', // Center the container horizontally
         backgroundColor: '#1DB954',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
-        marginVertical: 10,
+        // marginVertical: 10,
     },
     textStyle: {
         color: '#fff',
@@ -285,7 +315,7 @@ const styles = StyleSheet.create({
         marginBottom: 20, // Add margin at the bottom of the text
     },
     buttonText: {
-        color: 'white',
+        color: 'black',
         fontSize: 16,
         fontWeight: 'bold',
         fontFamily: 'Lemon-Regular', // Apply your custom font here
@@ -294,7 +324,7 @@ const styles = StyleSheet.create({
     },
     moodContainer: {
         marginTop: 130, // Increase the top margin to move everything down
-        marginBottom: 20,
+        marginBottom: 30,
         flexDirection: 'row', // Make it a row container
         flexWrap: 'wrap', // Allow wrapping to the next row
         justifyContent: 'center',
@@ -378,8 +408,26 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10, // Space between rows
     },
+    backButton: {
+        alignItems: 'center', // To center align the icon and text vertically
+        backgroundColor: '#ffffff', // Customize the button background color
+        borderRadius: 5,
+        justifyContent: "center",
+        marginBottom: 10,
+        marginLeft: 280,
+        position:'absolute',
+        top:45,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+    },
+
+
+    backToList: {
+        color: 'black',
+        fontSize: 16,
+        fontWeight: 'bold',
+        fontFamily: 'Lemon-Regular', // Apply your custom font here
+    },
 });
 
 export default MusicStyles;
-
-

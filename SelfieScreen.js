@@ -84,7 +84,7 @@ export default function SelfieScreen() {
     };
 
     const analyzeMood = async (imageUri) => {
-        const apiUrl = "https://dcc1-46-19-85-91.ngrok.io";
+        const apiUrl = "https://0cb2-195-95-183-254.ngrok.io";
         const formData = new FormData();
         formData.append("image", {
             uri: imageUri,
@@ -231,9 +231,13 @@ export default function SelfieScreen() {
                     </SafeAreaView>
                 }
 
+
                 {showLoadingAlert && (
-                    <View style={styles.loadingAlert}>
-                        <ActivityIndicator size="large" color="#5372af" />
+                    <View style={styles.loadingAlertContainer}>
+                        <View style={styles.loadingAlertContent}>
+                            <ActivityIndicator size="large" color="#5372af" />
+                            <Text style={styles.loadingAlertText}>Analyzing...</Text>
+                        </View>
                     </View>
                 )}
 
@@ -272,8 +276,11 @@ export default function SelfieScreen() {
             )}
 
             {analyzingMood && (
-                <View style={styles.loadingAlert}>
-                    <ActivityIndicator size="large" color="#5372af" />
+                <View style={styles.loadingAlertContainer}>
+                    <View style={styles.loadingAlertContent}>
+                        <ActivityIndicator size="large" color="#5372af" />
+                        <Text style={styles.loadingAlertText}>Analyzing...</Text>
+                    </View>
                 </View>
             )}
 
@@ -322,5 +329,24 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "rgba(0, 0, 0, 0.5)", // Background color with some opacity
+    },
+    loadingAlertContainer: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(255, 255, 255, 0.8)", // Background color with some opacity
+    },
+    loadingAlertContent: {
+        alignItems: "center",
+    },
+    loadingAlertText: {
+        fontFamily: 'Lemon-Regular',
+        fontSize: 20,
+        color: "#5372af",
+        marginTop: 16,
     },
 });

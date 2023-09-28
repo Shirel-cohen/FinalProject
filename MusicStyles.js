@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import {View, Text, TouchableOpacity, TextInput, Image, Linking, StyleSheet, FlatList} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { Camera } from "expo-camera"; // Import Camera only from expo-camera
+import { Camera } from "expo-camera";
 
 
 const CLIENT_ID = '74e458b48ee2421289c45b9a57aa3b25';
-const REDIRECT_URI = 'exp://192.168.122.1:8081';
+const REDIRECT_URI = 'exp://192.168.35.1:8081';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 
@@ -250,7 +249,7 @@ const MusicStyles = ({route,  navigation}) => {
                         ) : (
                             <View>
                                 <Text style={styles.textStyle}>
-                                    {!selectedMood ? "Since you're neutral...\n You can choose what mood you want to be in" : "Choose the genre you would like to listen"}
+                                    {!selectedMood ? "Since you're neutral...\n You can choose what mood you want to be in" : "Now you can choose the genre you would like to listen to"}
                                 </Text>
                             </View>
                         )}
@@ -262,7 +261,9 @@ const MusicStyles = ({route,  navigation}) => {
                                 style={styles.genreButton}>
                                 <Image source={genreImages[moodButton.toLowerCase()]} style={styles.image} />
                                 {!Object.keys(MOOD_PLAYLISTS).includes(mood.toLowerCase()) && (
-                                    <Image source={moodImages[moodButton.toLowerCase()]} style={styles.image} />
+                                    <View style={styles.moodImagesContainer}>
+                                        <Image source={moodImages[moodButton.toLowerCase()]} style={styles.image} />
+                                    </View>
                                 )}
 
                             </TouchableOpacity>
@@ -360,8 +361,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         fontFamily: 'Lemon-Regular', // Apply your custom font here
-
-
     },
     moodContainer: {
         marginTop: 130, // Increase the top margin to move everything down
@@ -375,8 +374,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
         fontFamily: 'Lemon-Regular'
-
-
     },
     styleContainer: {
         flexDirection: 'row',
@@ -434,6 +431,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 5,
     },
+    moodImagesContainer: {
+        flexDirection: 'row', // Arrange images horizontally
+        justifyContent: 'space-between', // Adjust the space between images
+        marginVertical: -40, // Add vertical margin to the container
+    },
     playButtonText: {
         color: 'white',
         fontSize: 14,
@@ -462,8 +464,6 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
     },
-
-
     backToList: {
         color: 'black',
         fontSize: 16,

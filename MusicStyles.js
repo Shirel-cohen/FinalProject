@@ -7,7 +7,7 @@ import { Camera } from "expo-camera"; // Import Camera only from expo-camera
 
 
 const CLIENT_ID = '74e458b48ee2421289c45b9a57aa3b25';
-const REDIRECT_URI = 'exp://10.100.102.42:8081';
+const REDIRECT_URI = 'exp://192.168.122.1:8081';
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const RESPONSE_TYPE = 'token';
 
@@ -52,6 +52,7 @@ const MOOD_PLAYLISTS = {
         mix: '0hlSvRQEWrtgQudVkgCFFt',
     }
 };
+
 const genreImages = {
     pop: require('./assets/pop.png'),
     hiphop: require('./assets/hiphop.png'),
@@ -61,6 +62,14 @@ const genreImages = {
     rock: require('./assets/rock.png'),
     mix: require('./assets/mix.png'),
 };
+
+const moodImages = {
+    happy: require('./assets/happy.png'),
+    sad: require('./assets/sad.png'),
+    angry: require('./assets/angry.png'),
+    surprise: require('./assets/surprise.png'),
+};
+
 const MusicStyles = ({route,  navigation}) => {
     const mood = route.params?.mood;
     const [token, setToken] = useState(null);
@@ -177,6 +186,7 @@ const MusicStyles = ({route,  navigation}) => {
             console.error('Error playing track:', error);
         }
     };
+
     const navigateToSelfieScreen = async () => {
         // Request camera permission here (remove media library permission request)
         const cameraPermission = await Camera.requestCameraPermissionsAsync();
@@ -191,6 +201,35 @@ const MusicStyles = ({route,  navigation}) => {
             alert("Please grant camera permission in settings.");
         }
     };
+
+    const renderMoodImages = () => {
+        if (!selectedMood) {
+            return (
+                <View style={styles.image}>
+                    {Object.keys(MOOD_PLAYLISTS).map(moodButton => (
+                        <TouchableOpacity
+                            key={moodButton}
+                            onPress={() => handleMoodImageClick(moodButton.toLowerCase())}
+                            style={styles.image}>
+                            <Image source={moodImages[moodButton.toLowerCase()]} style={styles.image} />
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            );
+        } else {
+            return (
+                <Image source={genreImages[selectedMood]} style={styles.image} />
+            );
+        }
+    };
+
+    const handleMoodImageClick = (moodButton) => {
+        // Handle mood image click here
+        setSelectedMood(moodButton.toLowerCase());
+        const filteredMoodStyles = MOOD_PLAYLISTS[moodButton.toLowerCase()];
+        setDisplayedMoodStyles(filteredMoodStyles);
+        setHasSelectedMood(true);
+    }
 
 
     return (
@@ -209,9 +248,11 @@ const MusicStyles = ({route,  navigation}) => {
                             <Text style={styles.textStyle}>Now you can choose the genre you would like to listen to</Text>
 
                         ) : (
-                            <Text style={styles.textStyle}>
-                                {!selectedMood ? "Choose a mood from the list" : "Choose the genre you would like to listen"}
-                            </Text>
+                            <View>
+                                <Text style={styles.textStyle}>
+                                    {!selectedMood ? "Since you're neutral...\n You can choose what mood you want to be in" : "Choose the genre you would like to listen"}
+                                </Text>
+                            </View>
                         )}
 
                         {Object.keys(displayedMoodStyles).map(moodButton => (
@@ -221,7 +262,7 @@ const MusicStyles = ({route,  navigation}) => {
                                 style={styles.genreButton}>
                                 <Image source={genreImages[moodButton.toLowerCase()]} style={styles.image} />
                                 {!Object.keys(MOOD_PLAYLISTS).includes(mood.toLowerCase()) && (
-                                    <Text style={styles.moodButton}>{moodButton}</Text>
+                                    <Image source={moodImages[moodButton.toLowerCase()]} style={styles.image} />
                                 )}
 
                             </TouchableOpacity>
@@ -399,9 +440,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     image: {
-        width: 100, // Set the width of the image as needed
+        width: 150, // Set the width of the image as needed
         height: 100, // Set the height of the image as needed
         resizeMode: 'contain', // Adjust the resizeMode as needed (cover, contain, stretch, etc.)
+        borderRadius: 10
     },
     genreButton: {
         width: '50%', // Each genre takes half of the container width

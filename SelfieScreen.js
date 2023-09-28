@@ -44,24 +44,24 @@ export default function SelfieScreen() {
     }, [analyzingMood]);
 
     const cameraPermissionFunction =async () => {
-            const cameraPermission = await Camera.requestCameraPermissionsAsync();
-            const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
-            setHasCameraPermission(cameraPermission.status === "granted");
-            setHasMediaLibraryPermission(
-                mediaLibraryPermission.status === "granted"
-            );
-        };
-        useEffect(() => {
-            cameraPermissionFunction(); // Call the camera permission function initially
+        const cameraPermission = await Camera.requestCameraPermissionsAsync();
+        const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
+        setHasCameraPermission(cameraPermission.status === "granted");
+        setHasMediaLibraryPermission(
+            mediaLibraryPermission.status === "granted"
+        );
+    };
+    useEffect(() => {
+        cameraPermissionFunction(); // Call the camera permission function initially
 
-            // Navigation listener to set a new cameraKey when navigating to this screen
-            const unsubscribe = navigation.addListener("focus", () => {
-                cameraPermissionFunction(); // Call the camera permission function when the screen comes into focus
-                setCameraKey(new Date().getTime()); // Change the key to remount the Camera component
-            });
+        // Navigation listener to set a new cameraKey when navigating to this screen
+        const unsubscribe = navigation.addListener("focus", () => {
+            cameraPermissionFunction(); // Call the camera permission function when the screen comes into focus
+            setCameraKey(new Date().getTime()); // Change the key to remount the Camera component
+        });
 
-            return unsubscribe; // Cleanup listener when unmounting the component
-        }, [navigation]);
+        return unsubscribe; // Cleanup listener when unmounting the component
+    }, [navigation]);
 
     const pickImage = async () => {
         try {
@@ -84,7 +84,7 @@ export default function SelfieScreen() {
     };
 
     const analyzeMood = async (imageUri) => {
-        const apiUrl = "https://fd04-46-116-1-219.ngrok.io";
+        const apiUrl = "https://dcc1-46-19-85-91.ngrok.io";
         const formData = new FormData();
         formData.append("image", {
             uri: imageUri,
@@ -250,7 +250,7 @@ export default function SelfieScreen() {
                         name="camera"
                         size={32}
                         color="#000"
-                    onPress={takePic}
+                        onPress={takePic}
                     />
                 </View>
                 <View style={styles.iconButton}>

@@ -41,6 +41,6 @@
 
       "permissions": ["CAMERA"]
     },
-    "scheme":  "exp://10.100.102.42:8081"
+    "scheme":  "exp://192.168.122.1:8081"
   }
 }
